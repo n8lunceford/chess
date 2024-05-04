@@ -140,7 +140,6 @@ public class ChessPiece {
             boolean hazard_SE = false;
             boolean hazard_SW = false;
 
-
             for (int i = 1; i < 8; i++) {
 
                 if (myPosition.getRow() + i > 8) {
