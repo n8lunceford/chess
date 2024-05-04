@@ -216,13 +216,6 @@ public class ChessPiece {
 
         else if (type == PieceType.QUEEN) {
 
-
-
-
-
-
-
-
             boolean hazard_N = false;
             boolean hazard_S = false;
             boolean hazard_E = false;
@@ -366,10 +359,6 @@ public class ChessPiece {
 
         else if (type == PieceType.KNIGHT) {
 
-
-
-
-
             //  ++
             if (!(myPosition.getRow() + 2 > 8) && !(myPosition.getColumn() + 1 > 8)) {
                 ChessPosition otherPosition = new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() + 1);
@@ -438,13 +427,31 @@ public class ChessPiece {
                 }
             }
 
+        }
 
+        else if (type == PieceType.KING) {
+
+            boolean hazard_N = false;
+            boolean hazard_S = false;
+            boolean hazard_E = false;
+            boolean hazard_W = false;
+
+            if (myPosition.getRow() + 1 > 8) {
+                hazard_N = true;
+            }
+            if (myPosition.getRow() - 1 < 1) {
+                hazard_S = true;
+            }
+            if (myPosition.getColumn() + 1 > 8) {
+                hazard_E = true;
+            }
+            if (myPosition.getColumn() - 1 < 1) {
+                hazard_W = true;
+            }
 
 
 
         }
-
-        else if (type == PieceType.KING) {}
 
         else if (type == PieceType.PAWN) {}
 
