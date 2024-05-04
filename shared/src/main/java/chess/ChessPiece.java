@@ -135,44 +135,33 @@ public class ChessPiece {
 
         else if (type == PieceType.BISHOP) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            boolean hazard_N = false;
-            boolean hazard_S = false;
-            boolean hazard_E = false;
-            boolean hazard_W = false;
+            boolean hazard_NE = false;
+            boolean hazard_NW = false;
+            boolean hazard_SE = false;
+            boolean hazard_SW = false;
 
 
             for (int i = 1; i < 8; i++) {
 
                 if (myPosition.getRow() + i > 8) {
-                    hazard_N = true;
+                    hazard_NE = true;
+                    hazard_NW = true;
                 }
                 if (myPosition.getRow() - i < 1) {
-                    hazard_S = true;
+                    hazard_SE = true;
+                    hazard_SW = true;
                 }
                 if (myPosition.getColumn() + i > 8) {
-                    hazard_E = true;
+                    hazard_NE = true;
+                    hazard_SE = true;
                 }
                 if (myPosition.getColumn() - i < 1) {
-                    hazard_W = true;
+                    hazard_NW = true;
+                    hazard_SW = true;
                 }
 
                 //  N O R T H   E A S T
-                if (!hazard_N && !hazard_E) {
+                if (!hazard_NE) {
                     ChessPosition position_NorthEast = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
 
                     if (board.getPiece(position_NorthEast) == null || board.getPiece(position_NorthEast).getTeamColor() != pieceColor) {
@@ -180,13 +169,12 @@ public class ChessPiece {
                         possibleMoves.add(validMove);
                     }
                     if (board.getPiece(position_NorthEast) != null) {
-                        hazard_N = true;
-                        hazard_E = true;
+                        hazard_NE = true;
                     }
                 }
 
                 //  N O R T H   W E S T
-                if (!hazard_N && !hazard_W) {
+                if (!hazard_NW) {
                     ChessPosition position_NorthWest = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i);
 
                     if (board.getPiece(position_NorthWest) == null || board.getPiece(position_NorthWest).getTeamColor() != pieceColor) {
@@ -194,13 +182,12 @@ public class ChessPiece {
                         possibleMoves.add(validMove);
                     }
                     if (board.getPiece(position_NorthWest) != null) {
-                        hazard_N = true;
-                        hazard_W = true;
+                        hazard_NW = true;
                     }
                 }
 
                 //  S O U T H   E A S T
-                if (!hazard_S && !hazard_E) {
+                if (!hazard_SE) {
                     ChessPosition position_SouthEast = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i);
 
                     if (board.getPiece(position_SouthEast) == null || board.getPiece(position_SouthEast).getTeamColor() != pieceColor) {
@@ -208,13 +195,12 @@ public class ChessPiece {
                         possibleMoves.add(validMove);
                     }
                     if (board.getPiece(position_SouthEast) != null) {
-                        hazard_S = true;
-                        hazard_E = true;
+                        hazard_SE = true;
                     }
                 }
 
                 //  S O U T H   W E S T
-                if (!hazard_S && !hazard_W) {
+                if (!hazard_SW) {
                     ChessPosition position_SouthWest = new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i);
 
                     if (board.getPiece(position_SouthWest) == null || board.getPiece(position_SouthWest).getTeamColor() != pieceColor) {
@@ -222,8 +208,7 @@ public class ChessPiece {
                         possibleMoves.add(validMove);
                     }
                     if (board.getPiece(position_SouthWest) != null) {
-                        hazard_S = true;
-                        hazard_W = true;
+                        hazard_SW = true;
                     }
                 }
 
