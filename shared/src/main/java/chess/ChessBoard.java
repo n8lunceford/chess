@@ -13,9 +13,7 @@ public class ChessBoard {
 
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
-    public ChessBoard() {
-        
-    }
+    public ChessBoard() {}
 
     /**
      * Adds a chess piece to the chessboard
