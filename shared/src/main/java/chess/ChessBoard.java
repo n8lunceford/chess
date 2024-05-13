@@ -15,6 +15,10 @@ public class ChessBoard {
 
     public ChessBoard() {}
 
+    public ChessBoard(ChessBoard original) {
+        squares = original.squares;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
