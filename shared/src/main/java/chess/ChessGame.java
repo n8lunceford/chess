@@ -117,6 +117,16 @@ public class ChessGame {
 
     private boolean inDanger(TeamColor teamColor, ChessBoard chessBoard) {
         boolean isInDanger = false;
+        ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, chessBoard);
+        for (ChessMove moveIterator : enemyMoves) {
+            if (chessBoard.getPiece(moveIterator.getEndPosition()) != null && chessBoard.getPiece(moveIterator.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
+                isInDanger = true;
+            }
+        }
+        return isInDanger;
+    }
+
+    private ArrayList<ChessMove> enemyHitList(TeamColor teamColor, ChessBoard chessBoard) {
         ArrayList<ChessMove> enemyMoves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -129,12 +139,23 @@ public class ChessGame {
                 }
             }
         }
-        for (ChessMove moveIterator : enemyMoves) {
-            if (chessBoard.getPiece(moveIterator.getEndPosition()) != null && chessBoard.getPiece(moveIterator.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
-                isInDanger = true;
+        return enemyMoves;
+    }
+
+    private ArrayList<ChessMove> friendHitList(TeamColor teamColor) {
+        ArrayList<ChessMove> friendMoves = new ArrayList<>();
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                ChessPosition thisPosition = new ChessPosition(r + 1, c + 1);
+                if (board.getPiece(thisPosition) != null && board.getPiece(thisPosition).getTeamColor() == teamColor) {
+                    ArrayList<ChessMove> specificMoves = (ArrayList<ChessMove>) board.getPiece(thisPosition).pieceMoves(board, thisPosition);
+                    for (ChessMove onlyOne : specificMoves) {
+                        friendMoves.add(onlyOne);
+                    }
+                }
             }
         }
-        return isInDanger;
+        return friendMoves;
     }
 
 
@@ -149,18 +170,7 @@ public class ChessGame {
         boolean isDead = false;
         if (isInCheck(teamColor)) {
             isDead = true;
-            ArrayList<ChessMove> friendMoves = new ArrayList<>();
-            for (int r = 0; r < 8; r++) {
-                for (int c = 0; c < 8; c++) {
-                    ChessPosition thisPosition = new ChessPosition(r + 1, c + 1);
-                    if (board.getPiece(thisPosition) != null && board.getPiece(thisPosition).getTeamColor() == teamColor) {
-                        ArrayList<ChessMove> specificMoves = (ArrayList<ChessMove>) board.getPiece(thisPosition).pieceMoves(board, thisPosition);
-                        for (ChessMove onlyOne : specificMoves) {
-                            friendMoves.add(onlyOne);
-                        }
-                    }
-                }
-            }
+            ArrayList<ChessMove> friendMoves = friendHitList(teamColor);
 
             for (ChessMove moveIterator : friendMoves) {
                 ChessBoard cloneBoard = cloneKnockoff();
@@ -196,8 +206,22 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        boolean isCrusty = false;
-        //throw new RuntimeException("Not implemented");
+
+        boolean isCrusty;
+
+        if (!isInCheck(teamColor)) {
+            isCrusty = true;
+
+            ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, board);
+
+
+
+
+
+        }
+        else {
+            isCrusty = false;
+        }
         return isCrusty;
     }
 
