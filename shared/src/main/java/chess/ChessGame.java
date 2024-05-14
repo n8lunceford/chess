@@ -113,8 +113,6 @@ public class ChessGame {
         return inDanger(teamColor, board);
     }
 
-
-
     private boolean inDanger(TeamColor teamColor, ChessBoard chessBoard) {
         boolean isInDanger = false;
         ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, chessBoard);
@@ -157,8 +155,6 @@ public class ChessGame {
         }
         return friendMoves;
     }
-
-
 
     /**
      * Determines if the given team is in checkmate
@@ -206,13 +202,25 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-
-        boolean isCrusty;
-
+        boolean isCrusty = true;
         if (!isInCheck(teamColor)) {
-            isCrusty = true;
-
-            ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, board);
+            ArrayList<ChessMove> friendMoves = friendHitList(teamColor);
+            for (ChessMove oneMove : friendMoves) {
+                boolean allClear = true;
+                ChessBoard cloneBoard = cloneKnockoff();
+                cloneBoard.addPiece(oneMove.getEndPosition(), cloneBoard.getPiece(oneMove.getStartPosition()));
+                cloneBoard.addPiece(oneMove.getStartPosition(), null);
+                ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, cloneBoard);
+                for (ChessMove antiMove : enemyMoves) {
+                    if (oneMove.getEndPosition().getRow() == antiMove.getEndPosition().getRow()
+                            && oneMove.getEndPosition().getColumn() == antiMove.getEndPosition().getColumn()) {
+                        allClear = false;
+                    }
+                }
+                if (allClear) {
+                    isCrusty = false;
+                }
+            }
 
 
 
