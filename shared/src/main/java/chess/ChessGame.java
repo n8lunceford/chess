@@ -163,16 +163,7 @@ public class ChessGame {
             }
 
             for (ChessMove moveIterator : friendMoves) {
-                ChessBoard cloneBoard = new ChessBoard();
-                for (int i = 0; i < 8; i++) {
-                    for (int j = 0; j < 8; j++) {
-                        ChessPosition thisPosition = new ChessPosition(i + 1, j + 1);
-                        if (board.getPiece(thisPosition) != null) {
-                            ChessPiece onePiece = new ChessPiece(board.getPiece(thisPosition).getTeamColor(),board.getPiece(thisPosition).getPieceType());
-                            cloneBoard.addPiece(thisPosition, onePiece);
-                        }
-                    }
-                }
+                ChessBoard cloneBoard = cloneKnockoff();
                 cloneBoard.addPiece(moveIterator.getEndPosition(), cloneBoard.getPiece(moveIterator.getStartPosition()));
                 cloneBoard.addPiece(moveIterator.getStartPosition(), null);
                 if (!inDanger(teamColor, cloneBoard)) {
@@ -181,6 +172,20 @@ public class ChessGame {
             }
         }
         return isDead;
+    }
+
+    private ChessBoard cloneKnockoff() {
+        ChessBoard cloneBoard = new ChessBoard();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPosition thisPosition = new ChessPosition(i + 1, j + 1);
+                if (board.getPiece(thisPosition) != null) {
+                    ChessPiece onePiece = new ChessPiece(board.getPiece(thisPosition).getTeamColor(),board.getPiece(thisPosition).getPieceType());
+                    cloneBoard.addPiece(thisPosition, onePiece);
+                }
+            }
+        }
+        return cloneBoard;
     }
 
     /**
