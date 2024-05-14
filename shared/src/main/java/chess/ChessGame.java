@@ -88,30 +88,71 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if ((isWhiteTurn && board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE)
+        if ( board.getPiece(move.getStartPosition()) != null
+                && (isWhiteTurn && board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE)
                 || (!isWhiteTurn && board.getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK)) {
-            boolean itIsGood = false;
-            for (ChessMove theMove : validMoves(move.getStartPosition())) {
-                if (theMove == move) {
-                    itIsGood = true;
+
+
+            ChessBoard cloneBoard = cloneKnockoff();
+            cloneBoard.addPiece(move.getEndPosition(), cloneBoard.getPiece(move.getStartPosition()));
+            cloneBoard.addPiece(move.getStartPosition(), null);
+            if (!inDanger(board.getPiece(move.getStartPosition()).getTeamColor(), cloneBoard)) {
+
+                boolean itIsGood = false;
+                for (ChessMove theMove : validMoves(move.getStartPosition())) {
+                    if (theMove.getStartPosition().getRow() == move.getStartPosition().getRow()
+                            && theMove.getStartPosition().getColumn() == move.getStartPosition().getColumn()
+                            && theMove.getEndPosition().getRow() == move.getEndPosition().getRow()
+                            && theMove.getEndPosition().getColumn() == move.getEndPosition().getColumn()) {
+                        itIsGood = true;
+                    }
                 }
-            }
-            if (itIsGood) {
-                board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-                board.addPiece(move.getStartPosition(), null);
-                if (isWhiteTurn) {
-                    isWhiteTurn = false;
+                if (itIsGood) {
+                    board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+                    board.addPiece(move.getStartPosition(), null);
+
+                    if (move.getPromotionPiece() != null) {
+                        if (move.getPromotionPiece() == ChessPiece.PieceType.QUEEN) {
+                            ChessPiece doubleAgent = new ChessPiece(board.getPiece(move.getEndPosition()).getTeamColor(), ChessPiece.PieceType.QUEEN);
+                            board.addPiece(move.getEndPosition(), doubleAgent);
+                        }
+                        else if (move.getPromotionPiece() == ChessPiece.PieceType.KNIGHT) {
+                            ChessPiece doubleAgent = new ChessPiece(board.getPiece(move.getEndPosition()).getTeamColor(), ChessPiece.PieceType.KNIGHT);
+                            board.addPiece(move.getEndPosition(), doubleAgent);
+                        }
+                        else if (move.getPromotionPiece() == ChessPiece.PieceType.ROOK) {
+                            ChessPiece doubleAgent = new ChessPiece(board.getPiece(move.getEndPosition()).getTeamColor(), ChessPiece.PieceType.ROOK);
+                            board.addPiece(move.getEndPosition(), doubleAgent);
+                        }
+                        else if (move.getPromotionPiece() == ChessPiece.PieceType.BISHOP) {
+                            ChessPiece doubleAgent = new ChessPiece(board.getPiece(move.getEndPosition()).getTeamColor(), ChessPiece.PieceType.BISHOP);
+                            board.addPiece(move.getEndPosition(), doubleAgent);
+                        }
+                    }
+
+                    if (isWhiteTurn) {
+                        isWhiteTurn = false;
+                    } else {
+                        isWhiteTurn = true;
+                    }
                 }
                 else {
-                    isWhiteTurn = true;
+                    throw new InvalidMoveException("Nay, this move is not valid.");
                 }
+
+
             }
             else {
-                throw new InvalidMoveException();
+                throw new InvalidMoveException("Nay, the king shall perish.");
             }
         }
+
+
+
+
+
         else {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Nay, it is not your turn.");
         }
     }
 
