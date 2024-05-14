@@ -61,12 +61,24 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        //ArrayList<ChessMove> theMoves = new ArrayList<>();
+        ArrayList<ChessMove> theMoves = new ArrayList<>();
 
-        //ChessBoard cloneBoard = new ChessBoard(board);
+        if (isInStalemate(board.getPiece(startPosition).getTeamColor()) || isInCheckmate(board.getPiece(startPosition).getTeamColor())) {
+            return theMoves;
+        }
 
-        //return theMoves;
-        throw new RuntimeException("Not implemented");
+        else {
+            ArrayList<ChessMove> friendMoves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+            for (ChessMove oneMove : friendMoves) {
+                ChessBoard cloneBoard = cloneKnockoff();
+                cloneBoard.addPiece(oneMove.getEndPosition(), cloneBoard.getPiece(oneMove.getStartPosition()));
+                cloneBoard.addPiece(oneMove.getStartPosition(), null);
+                if (!inDanger(board.getPiece(startPosition).getTeamColor(), cloneBoard)) {
+                    theMoves.add(oneMove);
+                }
+            }
+            return theMoves;
+        }
     }
 
     /**
