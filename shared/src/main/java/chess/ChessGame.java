@@ -12,7 +12,7 @@ import java.util.Collection;
 public class ChessGame {
 
     private ChessBoard board;
-    private boolean isWhiteTurn;
+    private boolean isWhiteTurn = true;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -87,7 +87,19 @@ public class ChessGame {
             if (itIsGood) {
                 board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
                 board.addPiece(move.getStartPosition(), null);
+                if (isWhiteTurn) {
+                    isWhiteTurn = false;
+                }
+                else {
+                    isWhiteTurn = true;
+                }
             }
+            else {
+                throw new InvalidMoveException();
+            }
+        }
+        else {
+            throw new InvalidMoveException();
         }
     }
 
@@ -98,7 +110,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        boolean inDanger = false;
+        /**
+
+        boolean isInDanger = false;
         ArrayList<ChessMove> enemyMoves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -113,11 +127,40 @@ public class ChessGame {
         }
         for (ChessMove moveIterator : enemyMoves) {
             if (board.getPiece(moveIterator.getEndPosition()) != null && board.getPiece(moveIterator.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
-                inDanger = true;
+                isInDanger = true;
             }
         }
-        return inDanger;
+        return isInDanger;
+
+        */
+        return inDanger(teamColor, board);
     }
+
+
+
+    private boolean inDanger(TeamColor teamColor, ChessBoard chessBoard) {
+        boolean isInDanger = false;
+        ArrayList<ChessMove> enemyMoves = new ArrayList<>();
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                ChessPosition thisPosition = new ChessPosition(r + 1, c + 1);
+                if (chessBoard.getPiece(thisPosition) != null && chessBoard.getPiece(thisPosition).getTeamColor() != teamColor) {
+                    ArrayList<ChessMove> specificMoves = (ArrayList<ChessMove>) chessBoard.getPiece(thisPosition).pieceMoves(chessBoard, thisPosition);
+                    for (ChessMove onlyOne : specificMoves) {
+                        enemyMoves.add(onlyOne);
+                    }
+                }
+            }
+        }
+        for (ChessMove moveIterator : enemyMoves) {
+            if (chessBoard.getPiece(moveIterator.getEndPosition()) != null && chessBoard.getPiece(moveIterator.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
+                isInDanger = true;
+            }
+        }
+        return isInDanger;
+    }
+
+
 
     /**
      * Determines if the given team is in checkmate
@@ -126,7 +169,43 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean isDead = false;
+
+
+        if (isInCheck(teamColor)) {
+
+            isDead = true;
+
+            ArrayList<ChessMove> friendMoves = new ArrayList<>();
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                    ChessPosition thisPosition = new ChessPosition(r + 1, c + 1);
+                    if (board.getPiece(thisPosition) != null && board.getPiece(thisPosition).getTeamColor() == teamColor) {
+                        ArrayList<ChessMove> specificMoves = (ArrayList<ChessMove>) board.getPiece(thisPosition).pieceMoves(board, thisPosition);
+                        for (ChessMove onlyOne : specificMoves) {
+                            friendMoves.add(onlyOne);
+                        }
+                    }
+                }
+            }
+
+
+
+            for (ChessMove moveIterator : friendMoves) {
+                ChessBoard cloneBoard = new ChessBoard(board);
+                cloneBoard.addPiece(moveIterator.getEndPosition(), board.getPiece(moveIterator.getStartPosition()));
+                cloneBoard.addPiece(moveIterator.getStartPosition(), null);
+                if (!inDanger(teamColor, cloneBoard)) {
+                    isDead = false;
+                }
+            }
+
+
+
+        }
+
+
+        return isDead;
     }
 
     /**
