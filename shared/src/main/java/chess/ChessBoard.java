@@ -17,6 +17,7 @@ public class ChessBoard {
 
     public ChessBoard(ChessBoard original) {
         squares = original.squares;
+        resetBoard();
     }
 
     /**
