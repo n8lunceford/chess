@@ -2,20 +2,42 @@ package dataaccess;
 
 import model.UserData;
 
+import java.util.ArrayList;
+
 public class UserDAOIMP implements UserDAO {
+
+    private ArrayList<UserData> users;
+
+    UserDAOIMP() {
+        users = new ArrayList<>();
+    }
 
     @Override
     public void clear() throws DataAccessException {
-
+        users = new ArrayList<>();
     }
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-
+        boolean isThere = false;
+        for (UserData user : users) {
+            if (user.username() == userData.username()) {
+                isThere = true;
+            }
+        }
+        if (!isThere) {
+            users.add(userData);
+        }
     }
 
     @Override
-    public void getUser(String username) throws DataAccessException {
-
+    public UserData getUser(String username) throws DataAccessException {
+        UserData flynn = new UserData(null,null,null);
+        for (UserData userData : users) {
+            if (username == userData.username()) {
+                flynn = userData;
+            }
+        }
+        return flynn;
     }
 }
