@@ -3,12 +3,13 @@ package dataaccess;
 import model.AuthData;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
-public class AuthDAOIMP implements AuthDAO {
+public class MemoryAuthDAO implements AuthDAO {
 
     private ArrayList<AuthData> authList;
 
-    AuthDAOIMP() {
+    public MemoryAuthDAO() {
         authList = new ArrayList<>();
     }
 
@@ -18,8 +19,9 @@ public class AuthDAOIMP implements AuthDAO {
     }
 
     @Override
-    public void createAuth(String username) throws DataAccessException {                                                        /**         needs authToken         */
-        AuthData myAuth = new AuthData(null, username);
+    public AuthData createAuth(String username) throws DataAccessException {                                                        /*         needs authToken         */
+        AuthData myAuth = new AuthData(UUID.randomUUID().toString(), username);
+        return myAuth;
     }
 
     @Override

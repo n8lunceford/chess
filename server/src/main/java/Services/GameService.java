@@ -13,6 +13,7 @@ public class GameService {
         return null;
     }
 
+    /**
     public AuthData login(UserData userData) {
         return null;
     }
@@ -20,6 +21,7 @@ public class GameService {
         AuthData placeHolder = authData;
         //return "{}";
     }
+    */
 
     public ArrayList<GameData> listGames (AuthData authData) {
         return null;

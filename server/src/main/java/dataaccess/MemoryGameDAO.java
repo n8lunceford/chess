@@ -2,15 +2,14 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
-import model.UserData;
 
 import java.util.ArrayList;
 
-public class GameDAOIMP implements GameDAO {
+public class MemoryGameDAO implements GameDAO {
 
     private ArrayList<GameData> games;
 
-    GameDAOIMP() {
+    public MemoryGameDAO() {
         games = new ArrayList<>();
     }
 
@@ -28,8 +27,8 @@ public class GameDAOIMP implements GameDAO {
             }
         }
         if (!isThere) {
-            int gameID = Integer.parseInt(null);
-            GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());             /**         NULL gameID         */
+            int gameID = games.size() + 1;
+            GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());             /*         NULL gameID         */
             games.add(newGame);
         }
     }

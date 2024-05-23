@@ -17,6 +17,7 @@ import dataaccess.DataAccessException;
 import chess.ChessGame.TeamColor;
 
 import model.GameData;
+import model.LogoutRequest;
 import model.UserData;
 import model.AuthData;
 import spark.*;
@@ -77,12 +78,14 @@ public class Server {
         //Gson jason = new Gson();
         //AuthData authData = jason.fromJson(req.body(), AuthData.class);
         ProfileService service = new ProfileService();
+        /**
         if (authData != null) {
             service.logout(authData);
             res.status(200);
         } else {
             res.status(401);
         }
+        */
         return "{}";
         //return jason.toJson(authData);
     }

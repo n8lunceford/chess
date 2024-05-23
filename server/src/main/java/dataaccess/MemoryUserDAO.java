@@ -4,11 +4,11 @@ import model.UserData;
 
 import java.util.ArrayList;
 
-public class UserDAOIMP implements UserDAO {
+public class MemoryUserDAO implements UserDAO {
 
     private ArrayList<UserData> users;
 
-    UserDAOIMP() {
+    public MemoryUserDAO() {
         users = new ArrayList<>();
     }
 
