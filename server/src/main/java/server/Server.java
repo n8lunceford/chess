@@ -55,6 +55,8 @@ public class Server {
         UserData profile = jason.fromJson(req.body(), UserData.class);
         ProfileService service = new ProfileService();
         AuthData authData = service.registration(profile);
+
+        res.status(200);
         return jason.toJson(authData);
         //return "{}";
     }
@@ -64,6 +66,8 @@ public class Server {
         LoginRequest request = jason.fromJson(req.body(), LoginRequest.class);
         ProfileService service = new ProfileService();
         AuthData authData = service.login(request);
+
+        res.status(200);
         return jason.toJson(authData);
     }
 
@@ -82,14 +86,18 @@ public class Server {
             res.status(401);
         }
         */
+
+        res.status(200);
         return "{}";
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
-        AuthData authData = jason.fromJson(req.body(), AuthData.class);
+        ListGamesRequest request = jason.fromJson(req.body(), ListGamesRequest.class);
         GameService service = new GameService();
-        ArrayList<GameData> games = service.listGames(authData);
+        ArrayList<GameData> games = service.listGames(request);
+
+        res.status(200);
         return jason.toJson(games);
     }
 
@@ -99,6 +107,8 @@ public class Server {
         GameData gameData = jason.fromJson(req.body(), GameData.class);
         GameService service = new GameService();
         int gameID = service.createGame(authData, gameData);
+
+        res.status(200);
         return jason.toJson(gameID);
     }
 
@@ -111,13 +121,15 @@ public class Server {
         AuthData authData = jason.fromJson(req.body(), AuthData.class);
         ChessGame.TeamColor playerColor = jason.fromJson(req.body(), ChessGame.TeamColor.class);
 
-
+        res.status(200);
         return "{}";
     }
 
     private Object clearApplication(Request req, Response res) throws DataAccessException {
         ClearService service = new ClearService();
         service.clear();
+
+        res.status(200);
         return "{}";
     }
 
