@@ -16,10 +16,7 @@ import dataaccess.DataAccessException;
 //import Handlers.LogoutHandler;
 import chess.ChessGame.TeamColor;
 
-import model.GameData;
-import model.LogoutRequest;
-import model.UserData;
-import model.AuthData;
+import model.*;
 import spark.*;
 
 import java.util.ArrayList;
@@ -68,9 +65,9 @@ public class Server {
 
     private Object login(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
-        UserData profile = jason.fromJson(req.body(), UserData.class);
+        LoginRequest request = jason.fromJson(req.body(), LoginRequest.class);
         ProfileService service = new ProfileService();
-        AuthData authData = service.login(profile);
+        AuthData authData = service.login(request);
         return jason.toJson(authData);
     }
 

@@ -3,12 +3,10 @@ package Services;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
-import model.AuthData;
+import model.*;
 //import model.Pet;
 //import exception.ResponseException;
 import model.AuthData;
-import model.LogoutRequest;
-import model.UserData;
 
 
 public class ProfileService {
@@ -26,8 +24,16 @@ public class ProfileService {
         }
     }
 
-    public AuthData login(UserData userData) {
-        return null;
+    public AuthData login(LoginRequest loginRequest) throws DataAccessException {
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        UserData candidate = new UserData(null, null, null);
+        if (userDAO.getUser(loginRequest.username()).password() == loginRequest.password()) {
+            candidate = userDAO.getUser(loginRequest.username());
+            return new MemoryAuthDAO().createAuth(candidate.username());
+        }
+        else {
+            return null;
+        }
     }
     public void logout(LogoutRequest logoutRequest) {
 
