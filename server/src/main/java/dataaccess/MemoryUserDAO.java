@@ -3,6 +3,7 @@ package dataaccess;
 import model.UserData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO {
 
@@ -21,8 +22,9 @@ public class MemoryUserDAO implements UserDAO {
     public void createUser(UserData userData) throws DataAccessException {
         boolean isThere = false;
         for (UserData user : users) {
-            if (user.username() == userData.username()) {
+            if (Objects.equals(user.username(), userData.username())) {
                 isThere = true;
+                break;
             }
         }
         if (!isThere) {
@@ -34,7 +36,7 @@ public class MemoryUserDAO implements UserDAO {
     public UserData getUser(String username) throws DataAccessException {
         UserData flynn = new UserData(null,null,null);
         for (UserData userData : users) {
-            if (username == userData.username()) {
+            if (Objects.equals(username, userData.username())) {
                 flynn = userData;
             }
         }

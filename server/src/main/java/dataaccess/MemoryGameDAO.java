@@ -28,7 +28,7 @@ public class MemoryGameDAO implements GameDAO {
         }
         if (!isThere) {
             int gameID = games.size() + 1;
-            GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());             /*         NULL gameID         */
+            GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());
             games.add(newGame);
             return newGame.gameID();
         }

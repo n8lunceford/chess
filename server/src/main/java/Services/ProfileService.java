@@ -1,13 +1,9 @@
 package Services;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.*;
-//import model.Pet;
-//import exception.ResponseException;
-import model.AuthData;
+
+import java.util.Objects;
 
 
 public class ProfileService {
@@ -21,11 +17,9 @@ public class ProfileService {
     }
 
     public AuthData registration(UserData userData) throws DataAccessException {
-        //MemoryUserDAO userDAO = new MemoryUserDAO();
         UserData dupeChecker = userDAO.getUser(userData.username());
         if (dupeChecker != null) {
             userDAO.createUser(userData);
-            //MemoryAuthDAO authDAO = new MemoryAuthDAO();
             return authDAO.createAuth(userData.username());
         }
         else {
@@ -34,9 +28,8 @@ public class ProfileService {
     }
 
     public AuthData login(LoginRequest loginRequest) throws DataAccessException {
-        //MemoryUserDAO userDAO = new MemoryUserDAO();
         UserData candidate;
-        if (userDAO.getUser(loginRequest.username()).password() == loginRequest.password()) {
+        if (Objects.equals(userDAO.getUser(loginRequest.username()).password(), loginRequest.password())) {
             candidate = userDAO.getUser(loginRequest.username());
             return authDAO.createAuth(candidate.username());
         }
@@ -45,14 +38,9 @@ public class ProfileService {
         }
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
-        //MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        //AuthData authData;
         if (authDAO.getAuth(logoutRequest.authToken()) != null) {
-            //authData = authDAO.getAuth(logoutRequest.authToken());
             authDAO.deleteAuth(logoutRequest.authToken());
         }
-        //AuthData placeHolder = authData;
-        //return "{}";
     }
 
 }
