@@ -17,12 +17,24 @@ import dataaccess.DataAccessException;
 //import Handlers.LogoutHandler;
 import chess.ChessGame.TeamColor;
 
+import dataaccess.*;
+
 import model.*;
 import spark.*;
 
 import java.util.ArrayList;
 
 public class Server {
+
+    private MemoryAuthDAO authDAO;
+    private MemoryUserDAO userDAO;
+    private MemoryGameDAO gameDAO;
+
+    public Server() {
+        authDAO = new MemoryAuthDAO();
+        userDAO = new MemoryUserDAO();
+        gameDAO = new MemoryGameDAO();
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -52,19 +64,32 @@ public class Server {
 
     private Object registration(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
-        UserData profile = jason.fromJson(req.body(), UserData.class);
-        ProfileService service = new ProfileService();
-        AuthData authData = service.registration(profile);
+        try {
+            UserData profile = jason.fromJson(req.body(), UserData.class);
+            ProfileService service = new ProfileService(userDAO, authDAO);
+            AuthData authData = service.registration(profile);
 
-        res.status(200);
-        return jason.toJson(authData);
-        //return "{}";
+            res.status(200);
+            return jason.toJson(authData);
+        }
+        catch (DataAccessException exception) {
+            if (exception.getMessage().equalsIgnoreCase("Error: bad request")) {
+                res.status(400);
+            }
+            else if (exception.getMessage().equalsIgnoreCase("Error: already taken")) {
+                res.status(403);
+            }
+            else {
+                res.status(500);
+            }
+            return jason.toJson(exception);
+        }
     }
 
     private Object login(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
         LoginRequest request = jason.fromJson(req.body(), LoginRequest.class);
-        ProfileService service = new ProfileService();
+        ProfileService service = new ProfileService(userDAO, authDAO);
         AuthData authData = service.login(request);
 
         res.status(200);
@@ -72,9 +97,9 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) throws DataAccessException {
-        Gson jason = new Gson();
-        LogoutRequest request = jason.fromJson(req.body(), LogoutRequest.class);
-        ProfileService service = new ProfileService();
+        //Gson jason = new Gson();
+        LogoutRequest request = new LogoutRequest(req.headers("authorization"));
+        ProfileService service = new ProfileService(userDAO, authDAO);
 
         service.logout(request);
 
@@ -93,22 +118,24 @@ public class Server {
 
     private Object listGames(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
-        ListGamesRequest request = jason.fromJson(req.body(), ListGamesRequest.class);
-        GameService service = new GameService();
+        //ListGamesRequest request = jason.fromJson(req.body(), ListGamesRequest.class);
+        ListGamesRequest request = new ListGamesRequest(req.headers("authorization"));
+        GameService service = new GameService(gameDAO, authDAO);
         ArrayList<GameData> games = service.listGames(request);
-
+        ListGamesResult result = new ListGamesResult(games);
         res.status(200);
-        return jason.toJson(games);
+        System.out.println(result);
+        return jason.toJson(result);
     }
 
     private Object createGame(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
         CreateGameRequest request = jason.fromJson(req.body(), CreateGameRequest.class);
-        GameService service = new GameService();
+        GameService service = new GameService(gameDAO, authDAO);
         int gameID = service.createGame(request);
-
+        CreateGameResult result = new CreateGameResult(gameID);
         res.status(200);
-        return jason.toJson(gameID);
+        return jason.toJson(result);
     }
 
 
@@ -117,42 +144,21 @@ public class Server {
     private Object joinGame(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
         JoinGameRequest request = jason.fromJson(req.body(), JoinGameRequest.class);
-        GameService service = new GameService();
-        service.joinGame(request);
+        JoinGameRequest requestTwo = new JoinGameRequest(req.headers("authorization"), request.teamColor(), request.gameID());
+        //request.authToken() = req.headers("authorization");
+        GameService service = new GameService(gameDAO, authDAO);
+        service.joinGame(requestTwo);
 
         res.status(200);
         return "{}";
     }
 
     private Object clearApplication(Request req, Response res) throws DataAccessException {
-        ClearService service = new ClearService();
+        ClearService service = new ClearService(authDAO, userDAO, gameDAO);
         service.clear();
 
         res.status(200);
         return "{}";
     }
-
-/**
-    private Object deletePet(Request req, Response res) throws DataAccessException {
-        var id = Integer.parseInt(req.params(":id"));
-        var pet = service.getPet(id);
-        if (pet != null) {
-            service.deletePet(id);
-            webSocketHandler.makeNoise(pet.name(), pet.sound());
-            res.status(204);
-        } else {
-            res.status(404);
-        }
-        return "";
-    }
-
-    private Object deleteAllPets(Request req, Response res) throws DataAccessException {
-        service.deleteAllPets();
-        res.status(204);
-        return "";
-    }
-    */
-
-
 
 }

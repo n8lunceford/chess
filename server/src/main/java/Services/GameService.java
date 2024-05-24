@@ -10,6 +10,14 @@ import java.util.ArrayList;
 
 public class GameService {
 
+    private MemoryGameDAO gameDAO;
+    private MemoryAuthDAO authDAO;
+
+    public GameService(MemoryGameDAO gameDAO, MemoryAuthDAO authDAO) {
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
+    }
+
     public AuthData createGame(UserData userData) {
         return null;
     }
@@ -25,8 +33,8 @@ public class GameService {
     */
 
     public ArrayList<GameData> listGames (ListGamesRequest listGamesRequest) throws DataAccessException {
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        //MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        //MemoryGameDAO gameDAO = new MemoryGameDAO();
         if (authDAO.getAuth(listGamesRequest.authToken()) != null) {
             return gameDAO.listGames();
         }
@@ -36,8 +44,8 @@ public class GameService {
     }
 
     public int createGame(CreateGameRequest createGameRequest) throws DataAccessException {
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        //MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        //MemoryGameDAO gameDAO = new MemoryGameDAO();
         if (authDAO.getAuth(createGameRequest.authToken()) != null) {
             return gameDAO.createGame(createGameRequest.gameName());
         }
@@ -47,8 +55,8 @@ public class GameService {
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        //MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        //MemoryGameDAO gameDAO = new MemoryGameDAO();
         if (authDAO.getAuth(joinGameRequest.authToken()) != null) {
             gameDAO.updateGame(joinGameRequest.gameID());
         }
