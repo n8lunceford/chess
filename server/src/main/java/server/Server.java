@@ -103,10 +103,9 @@ public class Server {
 
     private Object createGame(Request req, Response res) throws DataAccessException {
         Gson jason = new Gson();
-        AuthData authData = jason.fromJson(req.body(), AuthData.class);
-        GameData gameData = jason.fromJson(req.body(), GameData.class);
+        CreateGameRequest request = jason.fromJson(req.body(), CreateGameRequest.class);
         GameService service = new GameService();
-        int gameID = service.createGame(authData, gameData);
+        int gameID = service.createGame(request);
 
         res.status(200);
         return jason.toJson(gameID);
@@ -116,10 +115,10 @@ public class Server {
 
 
     private Object joinGame(Request req, Response res) throws DataAccessException {
-
         Gson jason = new Gson();
-        AuthData authData = jason.fromJson(req.body(), AuthData.class);
-        ChessGame.TeamColor playerColor = jason.fromJson(req.body(), ChessGame.TeamColor.class);
+        JoinGameRequest request = jason.fromJson(req.body(), JoinGameRequest.class);
+        GameService service = new GameService();
+        service.joinGame(request);
 
         res.status(200);
         return "{}";

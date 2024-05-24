@@ -19,7 +19,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void createGame(String gameName) throws DataAccessException {
+    public int createGame(String gameName) throws DataAccessException {
         boolean isThere = false;
         for (GameData game : games) {
             if (game.gameName() == gameName) {
@@ -30,6 +30,10 @@ public class MemoryGameDAO implements GameDAO {
             int gameID = games.size() + 1;
             GameData newGame = new GameData(gameID, null, null, gameName, new ChessGame());             /*         NULL gameID         */
             games.add(newGame);
+            return newGame.gameID();
+        }
+        else {
+            return 0;
         }
     }
 

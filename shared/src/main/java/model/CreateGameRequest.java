@@ -1,4 +1,4 @@
 package model;
 
-public record CreateGameRequest() {
+public record CreateGameRequest(String authToken, String gameName) {
 }

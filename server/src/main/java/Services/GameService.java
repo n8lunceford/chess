@@ -4,10 +4,7 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
-import model.AuthData;
-import model.GameData;
-import model.ListGamesRequest;
-import model.UserData;
+import model.*;
 
 import java.util.ArrayList;
 
@@ -38,12 +35,23 @@ public class GameService {
         }
     }
 
-    public int createGame(AuthData authData, GameData gameData) throws DataAccessException {
-        return 0;
+    public int createGame(CreateGameRequest createGameRequest) throws DataAccessException {
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        if (authDAO.getAuth(createGameRequest.authToken()) != null) {
+            return gameDAO.createGame(createGameRequest.gameName());
+        }
+        else {
+            return 0;
+        }
     }
 
-    public void joinGame(AuthData authData, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
-
+    public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        if (authDAO.getAuth(joinGameRequest.authToken()) != null) {
+            gameDAO.updateGame(joinGameRequest.gameID());
+        }
     }
 
 }
