@@ -8,6 +8,7 @@ import server.websocket.WebSocketHandler;
 import service.PetService;
 */
 
+import Services.ClearService;
 import Services.GameService;
 import Services.ProfileService;
 import chess.ChessGame;
@@ -35,12 +36,7 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
-        //Spark.delete("/db", this::clearApplication);
-
-        //Spark.get("/pet", this::listPets);
-        //Spark.delete("/pet/:id", this::deletePet);
-        //Spark.delete("/pet", this::deleteAllPets);
-        //Spark.exception(DataAccessException.class, this::exceptionHandler);
+        Spark.delete("/db", this::clearApplication);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -72,19 +68,21 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) throws DataAccessException {
-        //Gson jason = new Gson();
-        //AuthData authData = jason.fromJson(req.body(), AuthData.class);
+        Gson jason = new Gson();
+        LogoutRequest request = jason.fromJson(req.body(), LogoutRequest.class);
         ProfileService service = new ProfileService();
+
+        service.logout(request);
+
         /**
         if (authData != null) {
-            service.logout(authData);
+            service.logout(request);
             res.status(200);
         } else {
             res.status(401);
         }
         */
         return "{}";
-        //return jason.toJson(authData);
     }
 
     private Object listGames(Request req, Response res) throws DataAccessException {
@@ -114,6 +112,12 @@ public class Server {
         ChessGame.TeamColor playerColor = jason.fromJson(req.body(), ChessGame.TeamColor.class);
 
 
+        return "{}";
+    }
+
+    private Object clearApplication(Request req, Response res) throws DataAccessException {
+        ClearService service = new ClearService();
+        service.clear();
         return "{}";
     }
 

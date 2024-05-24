@@ -26,7 +26,7 @@ public class ProfileService {
 
     public AuthData login(LoginRequest loginRequest) throws DataAccessException {
         MemoryUserDAO userDAO = new MemoryUserDAO();
-        UserData candidate = new UserData(null, null, null);
+        UserData candidate;
         if (userDAO.getUser(loginRequest.username()).password() == loginRequest.password()) {
             candidate = userDAO.getUser(loginRequest.username());
             return new MemoryAuthDAO().createAuth(candidate.username());
@@ -35,8 +35,13 @@ public class ProfileService {
             return null;
         }
     }
-    public void logout(LogoutRequest logoutRequest) {
-
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        //AuthData authData;
+        if (authDAO.getAuth(logoutRequest.authToken()) != null) {
+            //authData = authDAO.getAuth(logoutRequest.authToken());
+            authDAO.deleteAuth(logoutRequest.authToken());
+        }
         //AuthData placeHolder = authData;
         //return "{}";
     }
