@@ -1,9 +1,11 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessGame.TeamColor;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MemoryGameDAO implements GameDAO {
 
@@ -22,8 +24,9 @@ public class MemoryGameDAO implements GameDAO {
     public int createGame(String gameName) throws DataAccessException {
         boolean isThere = false;
         for (GameData game : games) {
-            if (game.gameName() == gameName) {
+            if (Objects.equals(game.gameName(), gameName)) {
                 isThere = true;
+                break;
             }
         }
         if (!isThere) {
@@ -54,7 +57,19 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(int gameID) throws DataAccessException {                                                             /**         NEEDS IMPLEMENTATION    */
-
+    public void updateGame(String username, TeamColor teamColor, GameData gameData) throws DataAccessException {
+        GameData placeHolder = gameData;
+        if (teamColor == TeamColor.WHITE) {
+            gameData = new GameData(placeHolder.gameID(), username, placeHolder.blackUsername(), placeHolder.gameName(), placeHolder.game());
+        }
+        else if (teamColor == TeamColor.BLACK) {
+            gameData = new GameData(placeHolder.gameID(), placeHolder.whiteUsername(), username, placeHolder.gameName(), placeHolder.game());
+        }
+        for (GameData game : games) {
+            if (Objects.equals(game.gameName(), gameData.gameName())) {
+                game = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+            }
+        }
+        //createGame(gameData.gameName());
     }
 }

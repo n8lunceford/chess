@@ -34,7 +34,7 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        UserData flynn = new UserData(null,null,null);
+        UserData flynn = null;
         for (UserData userData : users) {
             if (Objects.equals(username, userData.username())) {
                 flynn = userData;

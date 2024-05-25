@@ -20,6 +20,7 @@ import model.*;
 import spark.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Server {
 
@@ -58,7 +59,7 @@ public class Server {
 
 
 
-    private Object registration(Request req, Response res) throws DataAccessException {
+    private Object registration(Request req, Response res) {
         Gson jason = new Gson();
         try {
             UserData profile = jason.fromJson(req.body(), UserData.class);
@@ -77,7 +78,7 @@ public class Server {
             else {
                 res.status(500);
             }
-            return jason.toJson(exception);
+            return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
 

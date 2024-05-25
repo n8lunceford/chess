@@ -35,7 +35,10 @@ public class GameService {
 
     public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
         if (authDAO.getAuth(joinGameRequest.authToken()) != null) {
-            gameDAO.updateGame(joinGameRequest.gameID());
+            String username = authDAO.getAuth(joinGameRequest.authToken()).username();
+            if (gameDAO.getGame(joinGameRequest.gameID()) != null) {
+                gameDAO.updateGame(username, joinGameRequest.teamColor(), gameDAO.getGame(joinGameRequest.gameID()));
+            }
         }
     }
 

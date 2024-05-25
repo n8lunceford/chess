@@ -18,12 +18,17 @@ public class ProfileService {
 
     public AuthData registration(UserData userData) throws DataAccessException {
         UserData dupeChecker = userDAO.getUser(userData.username());
-        if (dupeChecker != null) {
-            userDAO.createUser(userData);
-            return authDAO.createAuth(userData.username());
+        if (dupeChecker == null) {
+            if (userData.username() == null || userData.password() == null || userData.email() == null) {
+                throw new DataAccessException("Error: bad request");
+            }
+            else {
+                userDAO.createUser(userData);
+                return authDAO.createAuth(userData.username());
+            }
         }
         else {
-            return null;
+            throw new DataAccessException("Error: already taken");
         }
     }
 
