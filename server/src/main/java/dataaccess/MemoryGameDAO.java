@@ -25,7 +25,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public int createGame(String gameName) throws DataAccessException {
+    public int createGame(String gameName) {
         boolean isThere = false;
         for (GameData game : games) {
             if (Objects.equals(game.gameName(), gameName)) {
@@ -45,7 +45,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) {
         GameData myGame = new GameData(0, null, null, null, new ChessGame());
         for (GameData game : games) {
             if (game.gameID() == gameID) {
@@ -56,12 +56,12 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public ArrayList<GameData> listGames() throws DataAccessException {
+    public ArrayList<GameData> listGames() {
         return games;
     }
 
     @Override
-    public void updateGame(String username, TeamColor teamColor, GameData gameData) throws DataAccessException {
+    public void updateGame(String username, TeamColor teamColor, GameData gameData) {
         GameData placeHolder = gameData;
         if (teamColor == TeamColor.WHITE) {
             gameData = new GameData(placeHolder.gameID(), username, placeHolder.blackUsername(), placeHolder.gameName(), placeHolder.game());
@@ -71,12 +71,10 @@ public class MemoryGameDAO implements GameDAO {
         }
         for (GameData game : games) {
             if (game.gameID() == gameData.gameID()) {
-                //game = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
                 games.remove(game);
                 games.add(new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game()));
                 break;
             }
         }
-        //createGame(gameData.gameName());
     }
 }

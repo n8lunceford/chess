@@ -1,18 +1,7 @@
 package server;
 
-/**
+import Services.*;
 import com.google.gson.Gson;
-import exception.ResponseException;
-import model.Pet;
-import server.websocket.WebSocketHandler;
-import service.PetService;
-*/
-
-import Services.ClearService;
-import Services.GameService;
-import Services.ProfileService;
-import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 
 import dataaccess.*;
 
@@ -56,8 +45,6 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-
-
 
     private Object registration(Request req, Response res) {
         Gson jason = new Gson();
@@ -124,13 +111,11 @@ public class Server {
     private Object listGames(Request req, Response res) {
         Gson jason = new Gson();
         try {
-            //ListGamesRequest request = jason.fromJson(req.body(), ListGamesRequest.class);
             ListGamesRequest request = new ListGamesRequest(req.headers("authorization"));
             GameService service = new GameService(gameDAO, authDAO);
             ArrayList<GameData> games = service.listGames(request);
             ListGamesResult result = new ListGamesResult(games);
             res.status(200);
-            //System.out.println(result);
             return jason.toJson(result);
         }
         catch (DataAccessException exception) {
@@ -144,7 +129,7 @@ public class Server {
         }
     }
 
-    private Object createGame(Request req, Response res) throws DataAccessException {
+    private Object createGame(Request req, Response res) {
         Gson jason = new Gson();
         try {
             CreateGameRequest request = jason.fromJson(req.body(), CreateGameRequest.class);
@@ -169,12 +154,11 @@ public class Server {
         }
     }
 
-    private Object joinGame(Request req, Response res) throws DataAccessException {
+    private Object joinGame(Request req, Response res) {
         Gson jason = new Gson();
         try {
             JoinGameRequest request = jason.fromJson(req.body(), JoinGameRequest.class);
             JoinGameRequest requestTwo = new JoinGameRequest(req.headers("authorization"), request.playerColor(), request.gameID());
-            //request.authToken() = req.headers("authorization");
             GameService service = new GameService(gameDAO, authDAO);
             service.joinGame(requestTwo);
             res.status(200);

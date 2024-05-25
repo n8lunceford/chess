@@ -1,5 +1,6 @@
 package Services;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 
@@ -37,7 +38,13 @@ public class GameService {
         if (joinGameRequest.authToken() != null && authDAO.getAuth(joinGameRequest.authToken()) != null) {
             String username = authDAO.getAuth(joinGameRequest.authToken()).username();
             if (joinGameRequest.gameID() != 0 && gameDAO.getGame(joinGameRequest.gameID()) != null && joinGameRequest.playerColor() != null) {
-                gameDAO.updateGame(username, joinGameRequest.playerColor(), gameDAO.getGame(joinGameRequest.gameID()));
+                if ((joinGameRequest.playerColor() == ChessGame.TeamColor.WHITE && gameDAO.getGame(joinGameRequest.gameID()).whiteUsername() == null)
+                        || (joinGameRequest.playerColor() == ChessGame.TeamColor.BLACK && gameDAO.getGame(joinGameRequest.gameID()).blackUsername() == null)) {
+                    gameDAO.updateGame(username, joinGameRequest.playerColor(), gameDAO.getGame(joinGameRequest.gameID()));
+                }
+                else {
+                    throw new DataAccessException("Error: already taken");
+                }
             }
             else {
                 throw new DataAccessException("Error: bad request");

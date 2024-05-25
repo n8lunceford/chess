@@ -23,7 +23,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData userData) throws DataAccessException {
+    public void createUser(UserData userData) {
         boolean isThere = false;
         for (UserData user : users) {
             if (Objects.equals(user.username(), userData.username())) {
@@ -37,7 +37,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) {
         UserData flynn = null;
         for (UserData userData : users) {
             if (Objects.equals(username, userData.username())) {
