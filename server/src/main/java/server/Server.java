@@ -82,7 +82,7 @@ public class Server {
         }
     }
 
-    private Object login(Request req, Response res) throws DataAccessException {
+    private Object login(Request req, Response res) {
         Gson jason = new Gson();
         try {
             LoginRequest request = jason.fromJson(req.body(), LoginRequest.class);
@@ -98,7 +98,7 @@ public class Server {
             else {
                 res.status(500);
             }
-            return jason.toJson(exception);
+            return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
 

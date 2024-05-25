@@ -34,12 +34,13 @@ public class ProfileService {
 
     public AuthData login(LoginRequest loginRequest) throws DataAccessException {
         UserData candidate;
-        if (Objects.equals(userDAO.getUser(loginRequest.username()).password(), loginRequest.password())) {
+        if (loginRequest.username() != null && loginRequest.password() != null
+                && userDAO.getUser(loginRequest.username()) != null && Objects.equals(userDAO.getUser(loginRequest.username()).password(), loginRequest.password())) {
             candidate = userDAO.getUser(loginRequest.username());
             return authDAO.createAuth(candidate.username());
         }
         else {
-            return null;
+            throw new DataAccessException("Error: unauthorized");
         }
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
