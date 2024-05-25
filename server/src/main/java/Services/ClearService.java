@@ -21,6 +21,9 @@ public class ClearService {
 
 
     public void clear() throws DataAccessException {
+//        if (gameDAO.size() == 0 && userDAO.size() == 0 && authDAO.size() == 0) {
+//            throw new DataAccessException("Error: unauthorized");
+//        }
         gameDAO.clear();
         userDAO.clear();
         authDAO.clear();

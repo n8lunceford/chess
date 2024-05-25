@@ -44,9 +44,29 @@ public class ProfileService {
         }
     }
     public void logout(LogoutRequest logoutRequest) throws DataAccessException {
-        if (authDAO.getAuth(logoutRequest.authToken()) != null) {
+        boolean isThere = false;
+        for (AuthData myAuth : authDAO.getAuthList()) {
+            if (Objects.equals(myAuth.authToken(), logoutRequest.authToken())) {
+                isThere = true;
+                break;
+            }
+        }
+        //int initialSize = authDAO.getAuthList().size();
+        if (logoutRequest.authToken() == null
+                || authDAO.getAuth(logoutRequest.authToken()) == null) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+        //if (authDAO.getAuth(logoutRequest.authToken()) != null) {
+        else {
             authDAO.deleteAuth(logoutRequest.authToken());
         }
+//        else {
+//            throw new DataAccessException("Error: unauthorized");
+//        }
+
+//        else if (initialSize == authDAO.getAuthList().size()) {
+//            throw new DataAccessException("Error: unauthorized");
+//        }
     }
 
 }

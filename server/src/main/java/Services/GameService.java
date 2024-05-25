@@ -20,7 +20,7 @@ public class GameService {
             return gameDAO.listGames();
         }
         else {
-            return null;
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
@@ -29,17 +29,22 @@ public class GameService {
             return gameDAO.createGame(createGameRequest.gameName());
         }
         else {
-            return 0;
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws DataAccessException {
-        if (authDAO.getAuth(joinGameRequest.authToken()) != null) {
+        if (joinGameRequest.authToken() != null && authDAO.getAuth(joinGameRequest.authToken()) != null) {
             String username = authDAO.getAuth(joinGameRequest.authToken()).username();
-            if (gameDAO.getGame(joinGameRequest.gameID()) != null) {
-                gameDAO.updateGame(username, joinGameRequest.teamColor(), gameDAO.getGame(joinGameRequest.gameID()));
+            if (joinGameRequest.gameID() != 0 && gameDAO.getGame(joinGameRequest.gameID()) != null && joinGameRequest.playerColor() != null) {
+                gameDAO.updateGame(username, joinGameRequest.playerColor(), gameDAO.getGame(joinGameRequest.gameID()));
+            }
+            else {
+                throw new DataAccessException("Error: bad request");
             }
         }
+        else {
+            throw new DataAccessException("Error: unauthorized");
+        }
     }
-
 }

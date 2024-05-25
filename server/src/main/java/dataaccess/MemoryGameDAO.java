@@ -15,6 +15,10 @@ public class MemoryGameDAO implements GameDAO {
         games = new ArrayList<>();
     }
 
+    public int size() {
+        return games.size();
+    }
+
     @Override
     public void clear() throws DataAccessException {
         games = new ArrayList<>();
@@ -66,8 +70,11 @@ public class MemoryGameDAO implements GameDAO {
             gameData = new GameData(placeHolder.gameID(), placeHolder.whiteUsername(), username, placeHolder.gameName(), placeHolder.game());
         }
         for (GameData game : games) {
-            if (Objects.equals(game.gameName(), gameData.gameName())) {
-                game = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+            if (game.gameID() == gameData.gameID()) {
+                //game = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game());
+                games.remove(game);
+                games.add(new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), gameData.game()));
+                break;
             }
         }
         //createGame(gameData.gameName());

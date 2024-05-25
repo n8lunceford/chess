@@ -14,6 +14,14 @@ public class MemoryAuthDAO implements AuthDAO {
         authList = new ArrayList<>();
     }
 
+    public ArrayList<AuthData> getAuthList() {
+        return authList;
+    }
+
+    public int size() {
+        return authList.size();
+    }
+
     @Override
     public void clear() throws DataAccessException {
         authList = new ArrayList<>();
@@ -21,7 +29,9 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public AuthData createAuth(String username) throws DataAccessException {                                                        /*         needs authToken         */
-        return new AuthData(UUID.randomUUID().toString(), username);
+        AuthData myAuth = new AuthData(UUID.randomUUID().toString(), username);
+        authList.add(myAuth);
+        return myAuth;
     }
 
     @Override
@@ -32,15 +42,47 @@ public class MemoryAuthDAO implements AuthDAO {
                 myAuth = auth;
             }
         }
-        return myAuth;
+        if (myAuth.authToken() != null && myAuth.username() != null) {
+            return myAuth;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        for (AuthData auth : authList) {
-            if (Objects.equals(auth.authToken(), authToken)) {
-                authList.remove(auth);
+
+//        AuthData myAuth = null;
+//        for (AuthData auth : authList) {
+//            if (Objects.equals(auth.authToken(), authToken)) {
+//                //authList.remove(auth);
+//                myAuth = auth;
+//            }
+//        }
+//        if (myAuth != null && myAuth.authToken() != null && myAuth.username() != null) {
+//            authList.remove(myAuth);
+//        }
+
+
+
+            if (getAuth(authToken) != null) {
+                authList.remove(getAuth(authToken));
             }
-        }
+            else {
+                throw new DataAccessException("Error: unauthorized");
+            }
+
+
+
+//        int authIndex = -1;
+//        for (int i = 0; i < authList.size(); i++) {
+//            if (Objects.equals(authList.get(i).authToken(), authToken)) {
+//                authIndex = i;
+//            }
+//        }
+//        if (authIndex != -1) {
+//            authList.remove(authIndex);
+//        }
     }
 }

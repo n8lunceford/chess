@@ -102,7 +102,7 @@ public class Server {
         }
     }
 
-    private Object logout(Request req, Response res) throws DataAccessException {
+    private Object logout(Request req, Response res) {
         try {
             LogoutRequest request = new LogoutRequest(req.headers("authorization"));
             ProfileService service = new ProfileService(userDAO, authDAO);
@@ -117,11 +117,11 @@ public class Server {
             else {
                 res.status(500);
             }
-            return new Gson().toJson(exception);
+            return new Gson().toJson(Map.of("message", exception.getMessage()));
         }
     }
 
-    private Object listGames(Request req, Response res) throws DataAccessException {
+    private Object listGames(Request req, Response res) {
         Gson jason = new Gson();
         try {
             //ListGamesRequest request = jason.fromJson(req.body(), ListGamesRequest.class);
@@ -140,7 +140,7 @@ public class Server {
             else {
                 res.status(500);
             }
-            return jason.toJson(exception);
+            return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
 
@@ -148,8 +148,9 @@ public class Server {
         Gson jason = new Gson();
         try {
             CreateGameRequest request = jason.fromJson(req.body(), CreateGameRequest.class);
+            CreateGameRequest requestTwo = new CreateGameRequest(req.headers("authorization"), request.gameName());
             GameService service = new GameService(gameDAO, authDAO);
-            int gameID = service.createGame(request);
+            int gameID = service.createGame(requestTwo);
             CreateGameResult result = new CreateGameResult(gameID);
             res.status(200);
             return jason.toJson(result);
@@ -164,7 +165,7 @@ public class Server {
             else {
                 res.status(500);
             }
-            return jason.toJson(exception);
+            return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
 
@@ -172,7 +173,7 @@ public class Server {
         Gson jason = new Gson();
         try {
             JoinGameRequest request = jason.fromJson(req.body(), JoinGameRequest.class);
-            JoinGameRequest requestTwo = new JoinGameRequest(req.headers("authorization"), request.teamColor(), request.gameID());
+            JoinGameRequest requestTwo = new JoinGameRequest(req.headers("authorization"), request.playerColor(), request.gameID());
             //request.authToken() = req.headers("authorization");
             GameService service = new GameService(gameDAO, authDAO);
             service.joinGame(requestTwo);
@@ -192,11 +193,11 @@ public class Server {
             else {
                 res.status(500);
             }
-            return jason.toJson(exception);
+            return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
 
-    private Object clearApplication(Request req, Response res) throws DataAccessException {
+    private Object clearApplication(Request req, Response res) {
         try {
             ClearService service = new ClearService(authDAO, userDAO, gameDAO);
             service.clear();
@@ -205,7 +206,7 @@ public class Server {
         }
         catch (DataAccessException exception) {
             res.status(500);
-            return new Gson().toJson(exception);
+            return new Gson().toJson(Map.of("message", exception.getMessage()));
         }
     }
 

@@ -13,6 +13,10 @@ public class MemoryUserDAO implements UserDAO {
         users = new ArrayList<>();
     }
 
+    public int size() {
+        return users.size();
+    }
+
     @Override
     public void clear() throws DataAccessException {
         users = new ArrayList<>();
