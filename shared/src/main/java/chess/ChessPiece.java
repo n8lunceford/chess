@@ -125,12 +125,10 @@ public class ChessPiece {
             multiplier = -1;
         }
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-
         ArrayList<ChessMove> neOne;
         ArrayList<ChessMove> neTwo;
         ArrayList<ChessMove> nwOne;
         ArrayList<ChessMove> nwTwo;
-
         if (isKnight) {
             neOne = sirThomas(board, myPosition, 2 * multiplier, 1);       //      two/one
             neTwo = sirThomas(board, myPosition, multiplier, 2);              //      one/two
@@ -147,27 +145,19 @@ public class ChessPiece {
         possibleMoves.addAll(neTwo);
         possibleMoves.addAll(nwOne);
         possibleMoves.addAll(nwTwo);
-
-
         return possibleMoves;
-
     }
 
     private ArrayList<ChessMove> pawnShop(ChessBoard board, ChessPosition myPosition, boolean isWhite) {
-
         int startRow = 2;
         int multiplier = 1;
         if (!isWhite) {
             startRow = 7;
             multiplier = -1;
         }
-
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-
-
         ChessPosition otherPosition;
         ChessPosition secondPosition;
-
         if (myPosition.getRow() == startRow) {
             otherPosition = new ChessPosition(startRow + multiplier, myPosition.getColumn());
             secondPosition = new ChessPosition(startRow + (multiplier * 2), myPosition.getColumn());
@@ -201,23 +191,18 @@ public class ChessPiece {
         /**
          *  S I D E   C A P T U R E
          */
-        if (myPosition.getColumn() + 1 <= 8) {
-            otherPosition = new ChessPosition(myPosition.getRow() + multiplier, myPosition.getColumn() + 1);
-            if (board.getPiece(otherPosition) != null && board.getPiece(otherPosition).getTeamColor() != pieceColor) {
-                if (otherPosition.getRow() == startRow + (multiplier * 6)) {
-                    /**
-                     *  C O D E   F O R   P R O M O T I O N   P I E C E
-                     */
-                    ArrayList<ChessMove> capture = pawnCapture(myPosition, otherPosition);
-                    possibleMoves.addAll(capture);
-                } else {
-                    ChessMove validMove = new ChessMove(myPosition, otherPosition, null);
-                    possibleMoves.add(validMove);
-                }
-            }
-        }
-        if (myPosition.getColumn() - 1 >= 1) {
-            otherPosition = new ChessPosition(myPosition.getRow() + multiplier, myPosition.getColumn() - 1);
+        ArrayList<ChessMove> brightSide = sideLine(board, myPosition, startRow, multiplier, 1);
+        ArrayList<ChessMove> darkSide = sideLine(board, myPosition, startRow, multiplier, -1);
+        possibleMoves.addAll(brightSide);
+        possibleMoves.addAll(darkSide);
+        return possibleMoves;
+    }
+
+    private ArrayList<ChessMove> sideLine(ChessBoard board, ChessPosition myPosition, int startRow, int multiplier, int leftOrRight) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        if (myPosition.getColumn() + leftOrRight <= 8
+                && myPosition.getColumn() + leftOrRight >= 1) {
+            ChessPosition  otherPosition = new ChessPosition(myPosition.getRow() + multiplier, myPosition.getColumn() + leftOrRight);
             if (board.getPiece(otherPosition) != null && board.getPiece(otherPosition).getTeamColor() != pieceColor) {
                 if (otherPosition.getRow() == startRow + (multiplier * 6)) {
                     /**
@@ -234,7 +219,7 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    ArrayList<ChessMove> pawnCapture(ChessPosition myPosition, ChessPosition otherPosition) {
+    private ArrayList<ChessMove> pawnCapture(ChessPosition myPosition, ChessPosition otherPosition) {
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         possibleMoves.add(new ChessMove(myPosition, otherPosition, PieceType.ROOK));
         possibleMoves.add(new ChessMove(myPosition, otherPosition, PieceType.BISHOP));
