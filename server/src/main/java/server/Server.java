@@ -1,6 +1,6 @@
 package server;
 
-import Services.*;
+import services.*;
 import com.google.gson.Gson;
 
 import dataaccess.*;

@@ -1,11 +1,9 @@
-package Services;
+package services;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import dataaccess.MemoryGameDAO;
-import model.*;
-import model.AuthData;
 
 public class ClearService {
 
