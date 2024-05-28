@@ -16,6 +16,14 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
+    public MemoryGameDAO getGameDAO() {
+        return gameDAO;
+    }
+
+    public MemoryAuthDAO getAuthDAO() {
+        return authDAO;
+    }
+
     public ArrayList<GameData> listGames (ListGamesRequest listGamesRequest) throws DataAccessException {
         if (authDAO.getAuth(listGamesRequest.authToken()) != null) {
             return gameDAO.listGames();
