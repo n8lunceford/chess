@@ -17,6 +17,10 @@ public class MemoryUserDAO implements UserDAO {
         return users.size();
     }
 
+    public ArrayList<UserData> getData() {
+        return users;
+    }
+
     @Override
     public void clear() throws DataAccessException {
         users = new ArrayList<>();

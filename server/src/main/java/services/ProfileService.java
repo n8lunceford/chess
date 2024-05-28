@@ -11,6 +11,10 @@ public class ProfileService {
     private MemoryUserDAO userDAO;
     private MemoryAuthDAO authDAO;
 
+    public int userSize() {
+        return userDAO.size();
+    }
+
     public ProfileService(MemoryUserDAO userDAO, MemoryAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
