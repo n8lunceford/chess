@@ -79,12 +79,7 @@ public class Server {
             return jason.toJson(authData);
         }
         catch (DataAccessException exception) {
-            if (exception.getMessage().equalsIgnoreCase("Error: unauthorized")) {
-                res.status(401);
-            }
-            else {
-                res.status(500);
-            }
+            statusSetter(exception, res);
             return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
@@ -98,12 +93,7 @@ public class Server {
             return "{}";
         }
         catch (DataAccessException exception) {
-            if (exception.getMessage().equalsIgnoreCase("Error: unauthorized")) {
-                res.status(401);
-            }
-            else {
-                res.status(500);
-            }
+            statusSetter(exception, res);
             return new Gson().toJson(Map.of("message", exception.getMessage()));
         }
     }
@@ -119,12 +109,7 @@ public class Server {
             return jason.toJson(result);
         }
         catch (DataAccessException exception) {
-            if (exception.getMessage().equalsIgnoreCase("Error: unauthorized")) {
-                res.status(401);
-            }
-            else {
-                res.status(500);
-            }
+            statusSetter(exception, res);
             return jason.toJson(Map.of("message", exception.getMessage()));
         }
     }
@@ -191,6 +176,15 @@ public class Server {
         catch (DataAccessException exception) {
             res.status(500);
             return new Gson().toJson(Map.of("message", exception.getMessage()));
+        }
+    }
+
+    private void statusSetter(DataAccessException exception, Response res) {
+        if (exception.getMessage().equalsIgnoreCase("Error: unauthorized")) {
+            res.status(401);
+        }
+        else {
+            res.status(500);
         }
     }
 
