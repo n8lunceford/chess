@@ -10,27 +10,22 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-
     private ChessBoard board;
     private boolean isWhiteTurn = true;
-
     private boolean blackRookOneMoved = false;
     private boolean blackRookTwoMoved = false;
     private boolean whiteRookOneMoved = false;
     private boolean whiteRookTwoMoved = false;
     private boolean blackKingMoved = false;
     private boolean whiteKingMoved = false;
-
     private boolean whitePawnHalf = false;
     private boolean blackPawnHalf = false;
     private int whitePawnColumn;
     private int blackPawnColumn;
-
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
     }
-
     /**
      * @return Which team's turn it is
      */
@@ -42,7 +37,6 @@ public class ChessGame {
             return TeamColor.BLACK;
         }
     }
-
     /**
      * Set's which teams turn it is
      *
@@ -56,7 +50,6 @@ public class ChessGame {
             isWhiteTurn = false;
         }
     }
-
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
@@ -64,7 +57,6 @@ public class ChessGame {
         WHITE,
         BLACK
     }
-
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -103,7 +95,6 @@ public class ChessGame {
             return theMoves;
         }
     }
-
     private ArrayList<ChessMove> enPassantMove(ChessPosition startPosition, ChessGame.TeamColor teamColor) {
         int startRow = 5;
         int multiplier = 1;
@@ -124,7 +115,6 @@ public class ChessGame {
         }
         return gotcha;
     }
-
     private ArrayList<ChessMove> plusOrMinus(ChessPosition startPosition, ChessGame.TeamColor teamColor, int multiplier, boolean pawnhalf, int pawnColumn, int yesOrNo) {
         ArrayList<ChessMove> gotcha = new ArrayList<>();
         if (startPosition.getColumn() + yesOrNo <= 8
@@ -144,7 +134,6 @@ public class ChessGame {
         }
         return gotcha;
     }
-
     private ArrayList<ChessMove> castleMoves(ChessPosition startPosition, int firstOrLastRow, boolean leftRook, boolean rightRook, boolean kingPin, TeamColor teamColor) {
         ArrayList<ChessMove> theMoves = new ArrayList<>();
         if (startPosition.getRow() == firstOrLastRow && startPosition.getColumn() == 5) {
@@ -159,7 +148,6 @@ public class ChessGame {
                     theMoves.addAll(rookie);
                 }
             }
-
             if (!kingPin && !rightRook
                     && !inDanger(teamColor, board, ChessPiece.PieceType.KING)) {
                 ChessPosition rookPosition = new ChessPosition(firstOrLastRow, 8);
@@ -173,7 +161,6 @@ public class ChessGame {
         }
         return theMoves;
     }
-
     private ArrayList<ChessMove> castleSimplifier(ChessPosition startPosition, ChessGame.TeamColor teamColor, ChessPosition kingEnd, ChessPosition rookEnd, ChessPosition rookPosition) {
         ArrayList<ChessMove> theMoves = new ArrayList<>();
         ChessBoard cheapo = cloneKnockoff();
@@ -195,11 +182,8 @@ public class ChessGame {
                 theMoves.add(castle);
             }
         }
-
         return theMoves;
-
     }
-
     private void rookEnd(ChessMove move) {
         int startRow;
         boolean kingMoved;
@@ -217,7 +201,6 @@ public class ChessGame {
             rookOneMoved = blackRookOneMoved;
             rookTwoMoved = blackRookTwoMoved;
         }
-
         if (move.getStartPosition().getRow() == startRow
                 && move.getStartPosition().getColumn() == 5 && !kingMoved) {
             if (move.getEndPosition().getRow() == startRow
@@ -248,7 +231,6 @@ public class ChessGame {
             }
         }
     }
-
     /**
      * Makes a move in a chess game
      *
@@ -263,7 +245,6 @@ public class ChessGame {
             cloneBoard.addPiece(move.getEndPosition(), cloneBoard.getPiece(move.getStartPosition()));
             cloneBoard.addPiece(move.getStartPosition(), null);
             if (!inDanger(board.getPiece(move.getStartPosition()).getTeamColor(), cloneBoard, ChessPiece.PieceType.KING)) {
-
                 boolean itIsGood = false;
                 for (ChessMove theMove : validMoves(move.getStartPosition())) {
                     if (theMove.getStartPosition().getRow() == move.getStartPosition().getRow()
@@ -281,9 +262,7 @@ public class ChessGame {
                         ChessPiece doubleAgent = new ChessPiece(board.getPiece(move.getEndPosition()).getTeamColor(), move.getPromotionPiece());
                         board.addPiece(move.getEndPosition(), doubleAgent);
                     }
-
                     rookEnd(move);
-
                     if (move.getStartPosition().getRow() == 1) {
                         if(move.getStartPosition().getColumn() == 1) {
                             whiteRookOneMoved = true;
@@ -346,7 +325,6 @@ public class ChessGame {
             throw new InvalidMoveException("Nay, it is not your turn.");
         }
     }
-
     /**
      * Determines if the given team is in check
      *
@@ -356,7 +334,6 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         return inDanger(teamColor, board, ChessPiece.PieceType.KING);
     }
-
     public boolean inDanger(TeamColor teamColor, ChessBoard chessBoard, ChessPiece.PieceType pieceType) {
         boolean isInDanger = false;
         ArrayList<ChessMove> enemyMoves = enemyHitList(teamColor, chessBoard);
@@ -367,7 +344,6 @@ public class ChessGame {
         }
         return isInDanger;
     }
-
     private ArrayList<ChessMove> enemyHitList(TeamColor teamColor, ChessBoard chessBoard) {
         ArrayList<ChessMove> enemyMoves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
@@ -381,7 +357,6 @@ public class ChessGame {
         }
         return enemyMoves;
     }
-
     private ArrayList<ChessMove> friendHitList(TeamColor teamColor) {
         ArrayList<ChessMove> friendMoves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
@@ -395,7 +370,6 @@ public class ChessGame {
         }
         return friendMoves;
     }
-
     /**
      * Determines if the given team is in checkmate
      *
@@ -419,7 +393,6 @@ public class ChessGame {
         }
         return isDead;
     }
-
     private ChessBoard cloneKnockoff() {
         ChessBoard cloneBoard = new ChessBoard();
         for (int i = 0; i < 8; i++) {
@@ -433,7 +406,6 @@ public class ChessGame {
         }
         return cloneBoard;
     }
-
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -461,8 +433,6 @@ public class ChessGame {
                     isCrusty = false;
                 }
             }
-
-
             boolean isThere = false;
             for (int r = 0; r < 8; r++) {
                 for (int c = 0; c < 8; c++) {
@@ -477,14 +447,12 @@ public class ChessGame {
             if (!isThere) {
                 isCrusty = false;
             }
-
         }
         else {
             isCrusty = false;
         }
         return isCrusty;
     }
-
     /**
      * Sets this game's chessboard with a given board
      *
@@ -506,7 +474,6 @@ public class ChessGame {
         whiteKingMoved = board.getPiece(newPosition) == null || board.getPiece(newPosition).getPieceType() != ChessPiece.PieceType.KING || board.getPiece(newPosition).getTeamColor() != TeamColor.WHITE;
         isWhiteTurn = true;
     }
-
     /**
      * Gets the current chessboard
      *
