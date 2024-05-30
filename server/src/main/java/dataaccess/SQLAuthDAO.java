@@ -5,6 +5,7 @@ import model.UserData;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO {
 
@@ -48,7 +49,8 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("DELETE auth")) {
+        try (var connection = DatabaseManager.getConnection();
+             var preparedStatement = connection.prepareStatement("DELETE auth")) {
 
             preparedStatement.executeUpdate();
 
@@ -60,7 +62,18 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
-        return null;
+        try (var connection = DatabaseManager.getConnection();
+             var preparedStatement = connection.prepareStatement("INSERT INTO user (authToken, username) VALUES (?, ?)")) {
+
+            AuthData myAuth = new AuthData(UUID.randomUUID().toString(), username);
+            preparedStatement.setString(1, myAuth.authToken());
+            preparedStatement.setString(2, myAuth.username());
+            preparedStatement.executeUpdate();
+            return myAuth;
+        }
+        catch (SQLException exception) {
+            throw new DataAccessException(exception.getMessage());
+        }
     }
 
     @Override
