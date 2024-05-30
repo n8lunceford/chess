@@ -1,13 +1,50 @@
 package dataaccess;
 
+import chess.ChessGame;
+import model.GameData;
 import model.UserData;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException {
         configureDatabase();
+    }
+
+    public int size() throws DataAccessException {
+        try (var connection = DatabaseManager.getConnection();
+             var preparedStatement = connection.prepareStatement("SELECT * FROM user");
+             var resultSet = preparedStatement.executeQuery()) {
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            else {
+                return 0;
+            }
+        }
+        catch (SQLException exception) {
+            throw new DataAccessException(exception.getMessage());
+        }
+    }
+
+    public ArrayList<UserData> getData() throws DataAccessException {
+        try (var connection = DatabaseManager.getConnection();
+             var preparedStatement = connection.prepareStatement("SELECT * FROM user");
+             var resultSet = preparedStatement.executeQuery()) {
+
+            ArrayList<UserData> users = new ArrayList<>();
+            //  Code where users takes in values of preparedStatement
+            while (resultSet.next()) {
+                users.add(new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email")));
+            }
+            return users;
+        }
+        catch (SQLException exception) {
+            throw new DataAccessException(exception.getMessage());
+        }
     }
 
     @Override
