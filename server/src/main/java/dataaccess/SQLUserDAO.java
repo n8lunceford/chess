@@ -38,7 +38,6 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("SELECT VALUE (?) FROM user")) {
-
             preparedStatement.setString(1, username);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -61,11 +60,8 @@ public class SQLUserDAO implements UserDAO {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(type),
-              INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+              PRIMARY KEY (`username`)
+            )
             """
     };
 
