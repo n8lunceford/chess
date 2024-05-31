@@ -26,7 +26,8 @@ public class SQLUserDAO implements UserDAO {
             }
         }
         catch (SQLException exception) {
-            throw new DataAccessException(exception.getMessage());
+            //throw new DataAccessException(exception.getMessage());
+            return 0;
         }
     }
 

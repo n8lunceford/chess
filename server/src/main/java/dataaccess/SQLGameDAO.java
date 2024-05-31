@@ -26,7 +26,8 @@ public class SQLGameDAO implements GameDAO {
             }
         }
         catch (SQLException exception) {
-            throw new DataAccessException(exception.getMessage());
+            //throw new DataAccessException(exception.getMessage());
+            return 0;
         }
     }
 
@@ -55,11 +56,12 @@ public class SQLGameDAO implements GameDAO {
             preparedStatement.setString(4, gameName);
             preparedStatement.setString(5, jason.toJson(new ChessGame()));
             preparedStatement.executeUpdate();
+            return gameID;
         }
         catch (SQLException exception) {
-            throw new DataAccessException(exception.getMessage());
+            //throw new DataAccessException(exception.getMessage());
+            return 0;
         }
-        return 0;
     }
 
     @Override
