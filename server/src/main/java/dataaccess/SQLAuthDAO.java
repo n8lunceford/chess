@@ -51,7 +51,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("DELETE auth")) {
+             var preparedStatement = connection.prepareStatement("DELETE FROM auth")) {
 
             preparedStatement.executeUpdate();
 
@@ -64,7 +64,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public AuthData createAuth(String username) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("INSERT INTO user (authToken, username) VALUES (?, ?)")) {
+             var preparedStatement = connection.prepareStatement("INSERT INTO auth (authToken, username) VALUES (?, ?)")) {
 
             AuthData myAuth = new AuthData(UUID.randomUUID().toString(), username);
             preparedStatement.setString(1, myAuth.authToken());
@@ -80,7 +80,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("SELECT VALUE (?) FROM auth")) {
+             var preparedStatement = connection.prepareStatement("SELECT * FROM auth where authToken = ?")) {
 
             preparedStatement.setString(1, authToken);
             var resultSet = preparedStatement.executeQuery();
@@ -88,7 +88,7 @@ public class SQLAuthDAO implements AuthDAO {
                 return new AuthData(authToken, resultSet.getString("username"));
             }
             else {
-                throw new DataAccessException("exception.getMessage()");
+                return null;
             }
         }
         catch (SQLException exception) {
@@ -99,7 +99,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("DELETE FROM auth WHERE ?")) {
+             var preparedStatement = connection.prepareStatement("DELETE FROM auth WHERE authToken = ?")) {
 
             preparedStatement.setString(1, authToken);
             preparedStatement.executeUpdate();

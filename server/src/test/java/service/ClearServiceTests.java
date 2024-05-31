@@ -20,12 +20,12 @@ public class ClearServiceTests {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        profileService = new ProfileService(new MemoryUserDAO(), new MemoryAuthDAO());
+        profileService = new ProfileService(new SQLUserDAO(), new SQLAuthDAO());
         profileService.registration(new UserData("myUsername", "myPassword", "myGmail"));
         profileService.registration(new UserData("secondUsername", "secondPassword", "secondGmail"));
         myAuth = profileService.login(new LoginRequest("myUsername", "myPassword"));
         secondAuth = profileService.login(new LoginRequest("secondUsername", "secondPassword"));
-        gameService = new GameService(new MemoryGameDAO(), profileService.getAuthDAO());
+        gameService = new GameService(new SQLGameDAO(), profileService.getAuthDAO());
         int gameID = gameService.createGame(new CreateGameRequest(myAuth.authToken(), "My new game"));
         gameService.joinGame(new JoinGameRequest(myAuth.authToken(), ChessGame.TeamColor.WHITE, gameID));
         gameService.joinGame(new JoinGameRequest(secondAuth.authToken(), ChessGame.TeamColor.BLACK, gameID));

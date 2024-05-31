@@ -2,28 +2,34 @@ package services;
 
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
 
 public class ProfileService {
 
-    private MemoryUserDAO userDAO;
-    private MemoryAuthDAO authDAO;
+    private SQLUserDAO userDAO;
+    private SQLAuthDAO authDAO;
 
     public int userSize() {
-        return userDAO.size();
+        try {
+            return userDAO.size();
+        }
+        catch (DataAccessException exception) {
+            return 0;
+        }
     }
 
-    public MemoryAuthDAO getAuthDAO() {
+    public SQLAuthDAO getAuthDAO() {
         return authDAO;
     }
 
-    public MemoryUserDAO getUserDAO() {
+    public SQLUserDAO getUserDAO() {
         return userDAO;
     }
 
-    public ProfileService(MemoryUserDAO userDAO, MemoryAuthDAO authDAO) {
+    public ProfileService(SQLUserDAO userDAO, SQLAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }
@@ -47,7 +53,7 @@ public class ProfileService {
     public AuthData login(LoginRequest loginRequest) throws DataAccessException {
         UserData candidate;
         if (loginRequest.username() != null && loginRequest.password() != null
-                && userDAO.getUser(loginRequest.username()) != null && Objects.equals(userDAO.getUser(loginRequest.username()).password(), loginRequest.password())) {
+                && userDAO.getUser(loginRequest.username()) != null && BCrypt.checkpw(loginRequest.password(), userDAO.getUser(loginRequest.username()).password())) {
             candidate = userDAO.getUser(loginRequest.username());
             return authDAO.createAuth(candidate.username());
         }

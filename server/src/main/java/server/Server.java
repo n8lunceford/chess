@@ -13,14 +13,17 @@ import java.util.Map;
 
 public class Server {
 
-    private MemoryAuthDAO authDAO;
-    private MemoryUserDAO userDAO;
-    private MemoryGameDAO gameDAO;
+    private SQLAuthDAO authDAO;
+    private SQLUserDAO userDAO;
+    private SQLGameDAO gameDAO;
 
     public Server() {
-        authDAO = new MemoryAuthDAO();
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
+        try {
+            authDAO = new SQLAuthDAO();
+            userDAO = new SQLUserDAO();
+            gameDAO = new SQLGameDAO();
+        }
+        catch (DataAccessException exception) {}
     }
 
     public int run(int desiredPort) {
@@ -94,6 +97,7 @@ public class Server {
         }
         catch (DataAccessException exception) {
             statusSetter(exception, res);
+            exception.printStackTrace();
             return new Gson().toJson(Map.of("message", exception.getMessage()));
         }
     }

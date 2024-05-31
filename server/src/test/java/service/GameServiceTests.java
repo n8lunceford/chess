@@ -20,12 +20,12 @@ public class GameServiceTests {
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        myProfile = new ProfileService(new MemoryUserDAO(), new MemoryAuthDAO());
+        myProfile = new ProfileService(new SQLUserDAO(), new SQLAuthDAO());
         myProfile.registration(new UserData("myUsername", "myPassword", "myGmail"));
         myProfile.registration(new UserData("secondUsername", "secondPassword", "secondGmail"));
         myAuth = myProfile.login(new LoginRequest("myUsername", "myPassword"));
         secondAuth = myProfile.login(new LoginRequest("secondUsername", "secondPassword"));
-        service = new GameService(new MemoryGameDAO(), myProfile.getAuthDAO());
+        service = new GameService(new SQLGameDAO(), myProfile.getAuthDAO());
     }
 
     @Test

@@ -8,19 +8,19 @@ import java.util.ArrayList;
 
 public class GameService {
 
-    private MemoryGameDAO gameDAO;
-    private MemoryAuthDAO authDAO;
+    private SQLGameDAO gameDAO;
+    private SQLAuthDAO authDAO;
 
-    public GameService(MemoryGameDAO gameDAO, MemoryAuthDAO authDAO) {
+    public GameService(SQLGameDAO gameDAO, SQLAuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
 
-    public MemoryGameDAO getGameDAO() {
+    public SQLGameDAO getGameDAO() {
         return gameDAO;
     }
 
-    public MemoryAuthDAO getAuthDAO() {
+    public SQLAuthDAO getAuthDAO() {
         return authDAO;
     }
 

@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.SQLAuthDAO;
+import dataaccess.SQLUserDAO;
 import model.AuthData;
 import model.LoginRequest;
 import model.LogoutRequest;
@@ -21,9 +21,14 @@ public class ProfileServiceTests {
 
     @BeforeEach
     public void setUp() {
-        potential = new ProfileService(new MemoryUserDAO(), new MemoryAuthDAO());
-        idealStorage.add(new UserData("myUser", "myPassword", "myGmail"));
-        idealStorage.add(new UserData("otherUser", "otherPassword", "otherGmail"));
+        try {
+            potential = new ProfileService(new SQLUserDAO(), new SQLAuthDAO());
+            idealStorage.add(new UserData("myUser", "myPassword", "myGmail"));
+            idealStorage.add(new UserData("otherUser", "otherPassword", "otherGmail"));
+        }
+        catch (DataAccessException exception) {
+            exception.printStackTrace();
+        }
     }
 
     @Test

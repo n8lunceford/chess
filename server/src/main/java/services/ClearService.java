@@ -1,17 +1,15 @@
 package services;
 
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.MemoryGameDAO;
+import dataaccess.*;
 
 public class ClearService {
 
-    private MemoryAuthDAO authDAO;
-    private MemoryUserDAO userDAO;
-    private MemoryGameDAO gameDAO;
+    private SQLAuthDAO authDAO;
+    private SQLUserDAO userDAO;
+    private SQLGameDAO gameDAO;
 
-    public ClearService(MemoryAuthDAO authDAO, MemoryUserDAO userDAO, MemoryGameDAO gameDAO) {
+    public ClearService(SQLAuthDAO authDAO, SQLUserDAO userDAO, SQLGameDAO gameDAO) {
         this.authDAO = authDAO;
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;

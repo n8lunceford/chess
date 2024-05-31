@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("DELETE game")) {
+             var preparedStatement = connection.prepareStatement("DELETE FROM game")) {
 
             preparedStatement.executeUpdate();
         }
@@ -59,24 +60,25 @@ public class SQLGameDAO implements GameDAO {
             return gameID;
         }
         catch (SQLException exception) {
-            //throw new DataAccessException(exception.getMessage());
-            return 0;
+            throw new DataAccessException(exception.getMessage());
+            //return 0;
         }
     }
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
+        Gson jason = new Gson();
         try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("SELECT VALUE (?) FROM user")) {
+             var preparedStatement = connection.prepareStatement("SELECT * FROM game where gameID = ?")) {
 
             preparedStatement.setString(1, String.valueOf(gameID));
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return new GameData(gameID, resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"),
-                        resultSet.getString("gameName"), (ChessGame) resultSet.getObject("game"));
+                        resultSet.getString("gameName"), jason.fromJson(resultSet.getString("game"), ChessGame.class));
             }
             else {
-                throw new DataAccessException("exception.getMessage()");
+                return null;
             }
         }
         catch (SQLException exception) {
@@ -86,6 +88,7 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public ArrayList<GameData> listGames() throws DataAccessException {
+        Gson jason = new Gson();
         try (var connection = DatabaseManager.getConnection();
              var preparedStatement = connection.prepareStatement("SELECT * FROM game");
              var resultSet = preparedStatement.executeQuery()) {
@@ -94,7 +97,7 @@ public class SQLGameDAO implements GameDAO {
             //  Code where games takes in values of preparedStatement
             while (resultSet.next()) {
                 games.add(new GameData(resultSet.getInt("gameID"), resultSet.getString("whiteUsername"), resultSet.getString("blackUsername"),
-                        resultSet.getString("gameName"), (ChessGame) resultSet.getObject("game")));
+                        resultSet.getString("gameName"), jason.fromJson(resultSet.getString("game"), ChessGame.class)));
             }
             return games;
         }
@@ -105,21 +108,24 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public void updateGame(String username, ChessGame.TeamColor teamColor, GameData gameData) throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("UPDATE game SET ? = ? WHERE gameID = ?")) {
+        try (var connection = DatabaseManager.getConnection()) {
 
             Gson jason = new Gson();
+            PreparedStatement preparedStatement;
             if (teamColor == ChessGame.TeamColor.WHITE) {
-                preparedStatement.setString(1, "whiteUsername");
+                preparedStatement = connection.prepareStatement("UPDATE game SET whiteUsername = ? WHERE gameID = ?");
+                //preparedStatement.setString(1, "whiteUsername");
             }
-            else if (teamColor == ChessGame.TeamColor.BLACK) {
-                preparedStatement.setString(1, "blackUsername");
+            else {
+                preparedStatement = connection.prepareStatement("UPDATE game SET blackUsername = ? WHERE gameID = ?");
+                //preparedStatement.setString(1, "blackUsername");
             }
-            preparedStatement.setString(2, username);
-            preparedStatement.setString(3, jason.toJson(gameData.gameID()));
+            preparedStatement.setString(1, username);
+            preparedStatement.setInt(2, gameData.gameID());
             preparedStatement.executeUpdate();
         }
         catch (SQLException exception) {
+            exception.printStackTrace();
             throw new DataAccessException(exception.getMessage());
         }
     }
@@ -130,8 +136,8 @@ public class SQLGameDAO implements GameDAO {
             """
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
               `gameName` varchar(256) NOT NULL,
               `game` text NOT NULL,
               PRIMARY KEY (`gameID`)

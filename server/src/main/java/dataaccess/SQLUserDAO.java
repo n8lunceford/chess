@@ -3,6 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public void clear() throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("DELETE user")) {
+        try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("DELETE FROM user")) {
 
             preparedStatement.executeUpdate();
 
@@ -64,7 +65,7 @@ public class SQLUserDAO implements UserDAO {
     public void createUser(UserData userData) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
             preparedStatement.setString(1, userData.username());
-            preparedStatement.setString(2, userData.password());
+            preparedStatement.setString(2, BCrypt.hashpw(userData.password(), BCrypt.gensalt()));
             preparedStatement.setString(3, userData.email());
             preparedStatement.executeUpdate();
         }
@@ -75,14 +76,14 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("SELECT VALUE (?) FROM user")) {
+        try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("SELECT * FROM user WHERE username = ?")) {
             preparedStatement.setString(1, username);
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return new UserData(username, resultSet.getString("password"), resultSet.getString("email"));
             }
             else {
-                throw new DataAccessException("exception.getMessage()");
+                return null;
             }
         }
         catch (SQLException exception) {
