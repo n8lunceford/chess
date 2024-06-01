@@ -13,23 +13,6 @@ public class SQLAuthDAO implements AuthDAO {
         configureDatabase();
     }
 
-    public ArrayList<AuthData> getAuthList() throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("SELECT * FROM auth");
-             var resultSet = preparedStatement.executeQuery()) {
-
-            ArrayList<AuthData> authList = new ArrayList<>();
-            //  Code where authList takes in values of preparedStatement
-            while (resultSet.next()) {
-                authList.add(new AuthData(resultSet.getString("authToken"), resultSet.getString("username")));
-            }
-            return authList;
-        }
-        catch (SQLException exception) {
-            throw new DataAccessException(exception.getMessage());
-        }
-    }
-
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
