@@ -65,7 +65,12 @@ public class SQLUserDAO implements UserDAO {
     public void createUser(UserData userData) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
             preparedStatement.setString(1, userData.username());
-            preparedStatement.setString(2, BCrypt.hashpw(userData.password(), BCrypt.gensalt()));
+            if (userData.password() != null) {
+                preparedStatement.setString(2, BCrypt.hashpw(userData.password(), BCrypt.gensalt()));
+            }
+            else {
+                throw new DataAccessException("Error: bad request");
+            }
             preparedStatement.setString(3, userData.email());
             preparedStatement.executeUpdate();
         }
