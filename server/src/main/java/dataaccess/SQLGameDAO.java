@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class SQLGameDAO implements GameDAO {
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatements);
     }
 
     @Override
@@ -131,6 +131,7 @@ public class SQLGameDAO implements GameDAO {
             """
     };
 
+    /**
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
@@ -144,4 +145,5 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(ex.getMessage());
         }
     }
+    */
 }

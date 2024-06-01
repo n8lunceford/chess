@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatements);
     }
 
     @Override
@@ -74,6 +74,7 @@ public class SQLUserDAO implements UserDAO {
             """
     };
 
+    /**
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
@@ -87,7 +88,7 @@ public class SQLUserDAO implements UserDAO {
             throw new DataAccessException(ex.getMessage());
         }
     }
-
+    */
 
 
 
