@@ -120,12 +120,16 @@ public class SQLGameDAO implements GameDAO {
                 preparedStatement = connection.prepareStatement("UPDATE game SET blackUsername = ? WHERE gameID = ?");
                 //preparedStatement.setString(1, "blackUsername");
             }
-            preparedStatement.setString(1, username);
-            preparedStatement.setInt(2, gameData.gameID());
+            if (username != null) {
+                preparedStatement.setString(1, username);
+            }
+            if (gameData != null) {
+                preparedStatement.setInt(2, gameData.gameID());
+            }
             preparedStatement.executeUpdate();
         }
         catch (SQLException exception) {
-            exception.printStackTrace();
+            //exception.printStackTrace();
             throw new DataAccessException(exception.getMessage());
         }
     }

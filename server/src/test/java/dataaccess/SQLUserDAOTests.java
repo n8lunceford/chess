@@ -4,11 +4,11 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SQLUserTests {
+public class SQLUserDAOTests {
 
     private SQLUserDAO userDAO;
 
-    SQLUserTests() {
+    SQLUserDAOTests() {
         try {
             userDAO = new SQLUserDAO();
         }
