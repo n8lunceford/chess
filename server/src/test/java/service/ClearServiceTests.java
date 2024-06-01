@@ -7,8 +7,6 @@ import services.*;
 
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClearServiceTests {
 
@@ -17,9 +15,19 @@ public class ClearServiceTests {
     private AuthData myAuth;
     private AuthData secondAuth;
     private ClearService garbageMan;
+    private SQLUserDAO userDAO = new SQLUserDAO();
+    private SQLGameDAO gameDAO = new SQLGameDAO();
+    private SQLAuthDAO authDAO = new SQLAuthDAO();
+
+    public ClearServiceTests() throws DataAccessException {
+    }
 
     @BeforeEach
     public void setUp() throws DataAccessException {
+        //garbageMan.clear();
+        userDAO.clear();
+        gameDAO.clear();
+        authDAO.clear();
         profileService = new ProfileService(new SQLUserDAO(), new SQLAuthDAO());
         profileService.registration(new UserData("myUsername", "myPassword", "myGmail"));
         profileService.registration(new UserData("secondUsername", "secondPassword", "secondGmail"));

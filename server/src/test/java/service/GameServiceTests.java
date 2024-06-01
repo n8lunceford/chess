@@ -8,8 +8,6 @@ import services.ProfileService;
 
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {
 
@@ -17,10 +15,17 @@ public class GameServiceTests {
     private ProfileService myProfile;
     private AuthData myAuth;
     private AuthData secondAuth;
+    private SQLUserDAO userDAO = new SQLUserDAO();
+    private SQLAuthDAO authDAO = new SQLAuthDAO();
+
+    public GameServiceTests() throws DataAccessException {
+    }
 
     @BeforeEach
     public void setUp() throws DataAccessException {
-        myProfile = new ProfileService(new SQLUserDAO(), new SQLAuthDAO());
+        userDAO.clear();
+        authDAO.clear();
+        myProfile = new ProfileService(userDAO, authDAO);
         myProfile.registration(new UserData("myUsername", "myPassword", "myGmail"));
         myProfile.registration(new UserData("secondUsername", "secondPassword", "secondGmail"));
         myAuth = myProfile.login(new LoginRequest("myUsername", "myPassword"));
