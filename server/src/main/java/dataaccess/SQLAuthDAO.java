@@ -67,7 +67,9 @@ public class SQLAuthDAO implements AuthDAO {
              var preparedStatement = connection.prepareStatement("INSERT INTO auth (authToken, username) VALUES (?, ?)")) {
 
             AuthData myAuth = new AuthData(UUID.randomUUID().toString(), username);
-            preparedStatement.setString(1, myAuth.authToken());
+            if (username != null) {
+                preparedStatement.setString(1, myAuth.authToken());
+            }
             preparedStatement.setString(2, myAuth.username());
             preparedStatement.executeUpdate();
             return myAuth;
@@ -82,7 +84,9 @@ public class SQLAuthDAO implements AuthDAO {
         try (var connection = DatabaseManager.getConnection();
              var preparedStatement = connection.prepareStatement("SELECT * FROM auth where authToken = ?")) {
 
-            preparedStatement.setString(1, authToken);
+            if (authToken != null) {
+                preparedStatement.setString(1, authToken);
+            }
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return new AuthData(authToken, resultSet.getString("username"));
@@ -101,7 +105,9 @@ public class SQLAuthDAO implements AuthDAO {
         try (var connection = DatabaseManager.getConnection();
              var preparedStatement = connection.prepareStatement("DELETE FROM auth WHERE authToken = ?")) {
 
-            preparedStatement.setString(1, authToken);
+            if (authToken != null) {
+                preparedStatement.setString(1, authToken);
+            }
             preparedStatement.executeUpdate();
         }
         catch (SQLException exception) {

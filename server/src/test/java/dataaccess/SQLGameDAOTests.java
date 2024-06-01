@@ -1,7 +1,6 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.UserData;
 import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
