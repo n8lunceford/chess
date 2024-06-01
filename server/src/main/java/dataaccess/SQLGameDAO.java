@@ -14,24 +14,6 @@ public class SQLGameDAO implements GameDAO {
         configureDatabase();
     }
 
-    public int size() throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("SELECT * FROM game");
-             var resultSet = preparedStatement.executeQuery()) {
-
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            }
-            else {
-                return 0;
-            }
-        }
-        catch (SQLException exception) {
-            //throw new DataAccessException(exception.getMessage());
-            return 0;
-        }
-    }
-
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
