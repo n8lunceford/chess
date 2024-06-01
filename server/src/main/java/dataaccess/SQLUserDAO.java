@@ -32,23 +32,6 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    public ArrayList<UserData> getData() throws DataAccessException {
-        try (var connection = DatabaseManager.getConnection();
-             var preparedStatement = connection.prepareStatement("SELECT * FROM user");
-             var resultSet = preparedStatement.executeQuery()) {
-
-            ArrayList<UserData> users = new ArrayList<>();
-            //  Code where users takes in values of preparedStatement
-            while (resultSet.next()) {
-                users.add(new UserData(resultSet.getString("username"), resultSet.getString("password"), resultSet.getString("email")));
-            }
-            return users;
-        }
-        catch (SQLException exception) {
-            throw new DataAccessException(exception.getMessage());
-        }
-    }
-
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection(); var preparedStatement = connection.prepareStatement("DELETE FROM user")) {

@@ -12,15 +12,6 @@ public class ProfileService {
     private SQLUserDAO userDAO;
     private SQLAuthDAO authDAO;
 
-    public int userSize() {
-        try {
-            return userDAO.size();
-        }
-        catch (DataAccessException exception) {
-            return 0;
-        }
-    }
-
     public SQLAuthDAO getAuthDAO() {
         return authDAO;
     }
