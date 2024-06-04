@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -46,8 +43,8 @@ public class GamePlayDrawing {
         drawHeaders(out, whiteTurn);
         drawBoard(out, whiteTurn, myBoard);
         drawHeaders(out, whiteTurn);
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
     }
 
     private static String[][] whiteBoard(ChessBoard board) {
