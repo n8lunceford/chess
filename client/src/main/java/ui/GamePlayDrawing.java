@@ -50,17 +50,19 @@ public class GamePlayDrawing {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out);
+        ChessBoard myBoard = new ChessBoard();
+        myBoard.resetBoard();
 
-        drawBoard(out);
-
-        drawHeaders(out);
+        boolean whiteTurn = true;
+        drawHeaders(out, whiteTurn);
+        drawBoard(out, whiteTurn, whiteBoard(myBoard));
+        drawHeaders(out, whiteTurn);
 
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private String[][] whiteBoard(ChessBoard board) {
+    private static String[][] whiteBoard(ChessBoard board) {
         String[][] myBoard = new String[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -70,7 +72,7 @@ public class GamePlayDrawing {
         return myBoard;
     }
 
-    private String[][] blackBoard(ChessBoard board) {
+    private static String[][] blackBoard(ChessBoard board) {
         String[][] myBoard = new String[8][8];
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -80,8 +82,8 @@ public class GamePlayDrawing {
         return myBoard;
     }
 
-    private String thisPiece(ChessPiece chessPiece) {
-        if (chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+    private static String thisPiece(ChessPiece chessPiece) {
+        if (chessPiece != null && chessPiece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             if (chessPiece.getPieceType() == ChessPiece.PieceType.KING)
                 return WHITE_KING;
             else if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN)
@@ -95,7 +97,7 @@ public class GamePlayDrawing {
             else if (chessPiece.getPieceType() == ChessPiece.PieceType.PAWN)
                 return WHITE_PAWN;
         }
-        else if (chessPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+        else if (chessPiece != null && chessPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             if (chessPiece.getPieceType() == ChessPiece.PieceType.KING)
                 return BLACK_KING;
             else if (chessPiece.getPieceType() == ChessPiece.PieceType.QUEEN)
@@ -112,11 +114,16 @@ public class GamePlayDrawing {
         return EMPTY;
     }
 
-    private static void drawHeaders(PrintStream out) {
+    private static void drawHeaders(PrintStream out, boolean whiteTurn) {
 
         setLightGrey(out);
-
-        String[] headers = { " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h " };
+        String[] headers;
+        if (whiteTurn) {
+            headers = new String[]{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        }
+        else {
+            headers = new String[]{" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+        }
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headers[boardCol]);
@@ -144,18 +151,28 @@ public class GamePlayDrawing {
         setLightGrey(out);
     }
 
-    private static void drawBoard(PrintStream out) {
+    private static void drawBoard(PrintStream out, boolean whiteTurn, String[][] boardValues) {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             boolean isEven = (boardRow % 2 == 0);
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
-            out.print(" " + (8 - boardRow) + " ");
+            if (whiteTurn) {
+                out.print(" " + (8 - boardRow) + " ");
+            }
+            else {
+                out.print(" " + (boardRow + 1) + " ");
+            }
             setLightGrey(out);
-            drawRowOfSquares(out, isEven);
+            drawRowOfSquares(out, boardRow, isEven, whiteTurn, boardValues);
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
-            out.print(" " + (8 - boardRow) + " ");
+            if (whiteTurn) {
+                out.print(" " + (8 - boardRow) + " ");
+            }
+            else {
+                out.print(" " + (boardRow + 1) + " ");
+            }
             setLightGrey(out);
 
             out.print(RESET_BG_COLOR);
@@ -165,7 +182,7 @@ public class GamePlayDrawing {
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, boolean isEven) {
+    private static void drawRowOfSquares(PrintStream out, int boardRow, boolean isEven, boolean whiteTurn, String[][] boardValues) {
 
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -179,9 +196,12 @@ public class GamePlayDrawing {
                     isWhite = false;
                 }
 
+                /**
                 if (squareRow == SQUARE_SIZE_IN_CHARS / 2) {
                     printPlayer(out, " N ", isWhite);
                 }
+                */
+                printPlayer(out, boardValues[boardRow][boardCol], isWhite);
 
                 if (isWhite)
                     setBlack(out);
@@ -203,10 +223,10 @@ public class GamePlayDrawing {
         }
 
         out.print(player);
-        if (isWhite)
-            setWhite(out);
-        else
-            setBlack(out);
+//        if (isWhite)
+//            setWhite(out);
+//        else
+//            setBlack(out);
     }
 
     private static void setLightGrey(PrintStream out) {
