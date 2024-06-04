@@ -8,15 +8,14 @@ import chess.ChessPosition;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 //import java.util.Random;
-//import src.main.java.chess.ChessBoard;
 
 import static ui.EscapeSequences.*;
 
 public class GamePlayDrawing {
 
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_CHARS = 3;
-    private static final int LINE_WIDTH_IN_CHARS = 1;
+    private static final int SQUARE_SIZE_IN_CHARS = 1;
+    private static final int LINE_WIDTH_IN_CHARS = 0;
     /**
     private static final String WHITE_KING = " ♔ ";
     private static final String WHITE_QUEEN = " ♕ ";
@@ -51,9 +50,11 @@ public class GamePlayDrawing {
 
         out.print(ERASE_SCREEN);
 
-        //drawHeaders(out);
+        drawHeaders(out);
 
-        //drawTicTacToeBoard(out);
+        drawBoard(out);
+
+        drawHeaders(out);
 
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
@@ -109,5 +110,117 @@ public class GamePlayDrawing {
                 return BLACK_PAWN;
         }
         return EMPTY;
+    }
+
+    private static void drawHeaders(PrintStream out) {
+
+        setLightGrey(out);
+
+        String[] headers = { " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h " };
+        out.print("   ");
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            drawHeader(out, headers[boardCol]);
+
+            /**
+            if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
+                out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
+            }
+            */
+        }
+        out.print("   ");
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
+        out.println();
+    }
+
+    private static void drawHeader(PrintStream out, String headerText) {
+        printHeaderText(out, headerText);
+    }
+
+    private static void printHeaderText(PrintStream out, String player) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(player);
+        setLightGrey(out);
+    }
+
+    private static void drawBoard(PrintStream out) {
+
+        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+            boolean isEven = (boardRow % 2 == 0);
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" " + (8 - boardRow) + " ");
+            setLightGrey(out);
+            drawRowOfSquares(out, isEven);
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" " + (8 - boardRow) + " ");
+            setLightGrey(out);
+
+            out.print(RESET_BG_COLOR);
+            out.print(RESET_TEXT_COLOR);
+
+            out.println();
+        }
+    }
+
+    private static void drawRowOfSquares(PrintStream out, boolean isEven) {
+
+        for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+                boolean isWhite;
+                if ((isEven && boardCol % 2 == 0) || (!isEven && boardCol % 2 == 1)) {
+                    setWhite(out);
+                    isWhite = true;
+                }
+                else {
+                    setBlack(out);
+                    isWhite = false;
+                }
+
+                if (squareRow == SQUARE_SIZE_IN_CHARS / 2) {
+                    printPlayer(out, " N ", isWhite);
+                }
+
+                if (isWhite)
+                    setBlack(out);
+                else
+                    setWhite(out);
+            }
+        }
+    }
+
+    private static void printPlayer(PrintStream out, String player, boolean isWhite) {
+
+        if (isWhite) {
+            out.print(SET_BG_COLOR_WHITE);
+            out.print(SET_TEXT_COLOR_BLACK);
+        }
+        else {
+            out.print(SET_BG_COLOR_BLACK);
+            out.print(SET_TEXT_COLOR_WHITE);
+        }
+
+        out.print(player);
+        if (isWhite)
+            setWhite(out);
+        else
+            setBlack(out);
+    }
+
+    private static void setLightGrey(PrintStream out) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
+    }
+
+    private static void setWhite(PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_WHITE);
+    }
+
+    private static void setBlack(PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
 }
