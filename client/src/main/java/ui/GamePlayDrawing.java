@@ -7,6 +7,7 @@ import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 //import java.util.Random;
 
 import static ui.EscapeSequences.*;
@@ -52,10 +53,9 @@ public class GamePlayDrawing {
 
         ChessBoard myBoard = new ChessBoard();
         myBoard.resetBoard();
-
         boolean whiteTurn = true;
         drawHeaders(out, whiteTurn);
-        drawBoard(out, whiteTurn, whiteBoard(myBoard));
+        drawBoard(out, whiteTurn, myBoard);
         drawHeaders(out, whiteTurn);
 
         out.print(SET_BG_COLOR_BLACK);
@@ -127,12 +127,6 @@ public class GamePlayDrawing {
         out.print("   ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headers[boardCol]);
-
-            /**
-            if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-                out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
-            }
-            */
         }
         out.print("   ");
         out.print(RESET_BG_COLOR);
@@ -151,7 +145,7 @@ public class GamePlayDrawing {
         setLightGrey(out);
     }
 
-    private static void drawBoard(PrintStream out, boolean whiteTurn, String[][] boardValues) {
+    private static void drawBoard(PrintStream out, boolean whiteTurn, ChessBoard boardValues) {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             boolean isEven = (boardRow % 2 == 0);
@@ -182,7 +176,7 @@ public class GamePlayDrawing {
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, int boardRow, boolean isEven, boolean whiteTurn, String[][] boardValues) {
+    private static void drawRowOfSquares(PrintStream out, int boardRow, boolean isEven, boolean whiteTurn, ChessBoard boardValues) {
 
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -195,13 +189,14 @@ public class GamePlayDrawing {
                     setBlack(out);
                     isWhite = false;
                 }
-
-                /**
-                if (squareRow == SQUARE_SIZE_IN_CHARS / 2) {
-                    printPlayer(out, " N ", isWhite);
+                String[][] myBoard;
+                if (whiteTurn) {
+                    myBoard = whiteBoard(boardValues);
                 }
-                */
-                printPlayer(out, boardValues[boardRow][boardCol], isWhite);
+                else {
+                    myBoard = blackBoard(boardValues);
+                }
+                printPlayer(out, myBoard[7 - boardRow][boardCol], isWhite);
 
                 if (isWhite)
                     setBlack(out);
@@ -215,18 +210,21 @@ public class GamePlayDrawing {
 
         if (isWhite) {
             out.print(SET_BG_COLOR_WHITE);
-            out.print(SET_TEXT_COLOR_BLACK);
         }
         else {
             out.print(SET_BG_COLOR_BLACK);
-            out.print(SET_TEXT_COLOR_WHITE);
         }
-
+        if (Objects.equals(player, " ♔ ") || Objects.equals(player, " ♕ ")
+                || Objects.equals(player, " ♗ ") || Objects.equals(player, " ♘ ")
+                || Objects.equals(player, " ♖ ") || Objects.equals(player, " ♙ ")) {
+            out.print(SET_TEXT_COLOR_RED);
+        }
+        else if (Objects.equals(player, " ♚ ") || Objects.equals(player, " ♛ ")
+                || Objects.equals(player, " ♝ ") || Objects.equals(player, " ♞ ")
+                || Objects.equals(player, " ♜ ") || Objects.equals(player, " ♟ ")) {
+            out.print("\u001b" + "[38;5;" + "25m");
+        }
         out.print(player);
-//        if (isWhite)
-//            setWhite(out);
-//        else
-//            setBlack(out);
     }
 
     private static void setLightGrey(PrintStream out) {
