@@ -8,7 +8,6 @@ import chess.ChessPosition;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-//import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
@@ -16,22 +15,7 @@ public class GamePlayDrawing {
 
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_CHARS = 1;
-    private static final int LINE_WIDTH_IN_CHARS = 0;
-    /**
-    private static final String WHITE_KING = " ♔ ";
-    private static final String WHITE_QUEEN = " ♕ ";
-    private static final String WHITE_BISHOP = " ♗ ";
-    private static final String WHITE_KNIGHT = " ♘ ";
-    private static final String WHITE_ROOK = " ♖ ";
-    private static final String WHITE_PAWN = " ♙ ";
-    private static final String BLACK_KING = " ♚ ";
-    private static final String BLACK_QUEEN = " ♛ ";
-    private static final String BLACK_BISHOP = " ♝ ";
-    private static final String BLACK_KNIGHT = " ♞ ";
-    private static final String BLACK_ROOK = " ♜ ";
-    private static final String BLACK_PAWN = " ♟ ";
-    private static final String EMPTY = " \u2003 ";
-    */
+
     private static final String WHITE_KING = EscapeSequences.WHITE_KING;
     private static final String WHITE_QUEEN = EscapeSequences.WHITE_QUEEN;
     private static final String WHITE_BISHOP = EscapeSequences.WHITE_BISHOP;
@@ -49,15 +33,19 @@ public class GamePlayDrawing {
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
-        out.print(ERASE_SCREEN);
-
         ChessBoard myBoard = new ChessBoard();
         myBoard.resetBoard();
         boolean whiteTurn = true;
+        printBoard(out, whiteTurn, myBoard);
+        spacer(out);
+        printBoard(out, !whiteTurn, myBoard);
+    }
+
+    public static void printBoard(PrintStream out, boolean whiteTurn, ChessBoard myBoard) {
+        out.print(ERASE_SCREEN);
         drawHeaders(out, whiteTurn);
         drawBoard(out, whiteTurn, myBoard);
         drawHeaders(out, whiteTurn);
-
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
     }
@@ -117,16 +105,31 @@ public class GamePlayDrawing {
         setLightGrey(out);
         String[] headers;
         if (whiteTurn) {
-            headers = new String[]{" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+            headers = new String[]{" a" + "\u2003", " b" + "\u2003", " c" + "\u2003", " d" + "\u2003", " e" + "\u2003", " f" + "\u2003", " g" + "\u2003", " h" + "\u2003"};
         }
         else {
-            headers = new String[]{" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+            headers = new String[]{" h" + "\u2003", " g" + "\u2003", " f" + "\u2003", " e" + "\u2003", " d" + "\u2003", " c" + "\u2003", " b" + "\u2003", " a" + "\u2003"};
         }
-        out.print("   ");
+        out.print(EscapeSequences.EMPTY);
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             drawHeader(out, headers[boardCol]);
         }
-        out.print("   ");
+        out.print(EscapeSequences.EMPTY);
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
+        out.println();
+    }
+
+    private static void spacer(PrintStream out) {
+        setBlack(out);
+        String[] headers;
+        headers = new String[]{EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY, EscapeSequences.EMPTY};
+
+        out.print(EscapeSequences.EMPTY);
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            out.print(headers[boardCol]);
+        }
+        out.print(EscapeSequences.EMPTY);
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
         out.println();
@@ -150,20 +153,20 @@ public class GamePlayDrawing {
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             if (whiteTurn) {
-                out.print(" " + (8 - boardRow) + " ");
+                out.print(" " + (8 - boardRow) + "\u2003");
             }
             else {
-                out.print(" " + (boardRow + 1) + " ");
+                out.print(" " + (boardRow + 1) + "\u2003");
             }
             setLightGrey(out);
             drawRowOfSquares(out, boardRow, isEven, whiteTurn, boardValues);
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             if (whiteTurn) {
-                out.print(" " + (8 - boardRow) + " ");
+                out.print(" " + (8 - boardRow) + "\u2003");
             }
             else {
-                out.print(" " + (boardRow + 1) + " ");
+                out.print(" " + (boardRow + 1) + "\u2003");
             }
             setLightGrey(out);
 
