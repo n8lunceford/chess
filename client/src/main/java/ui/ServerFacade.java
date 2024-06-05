@@ -12,7 +12,7 @@ import java.net.*;
 
 public class ServerFacade {
 
-    public void login(String username, String password) throws Exception {
+    public String login(String username, String password) throws Exception {
         // Specify the desired endpoint
         URI uri = new URI("http://localhost:8080/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -35,11 +35,13 @@ public class ServerFacade {
         // Output the response body
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            System.out.println(new Gson().fromJson(inputStreamReader, AuthData.class));
+            AuthData myAuth = new Gson().fromJson(inputStreamReader, AuthData.class);
+            System.out.println(myAuth);
+            return myAuth.authToken();
         }
     }
 
-    public void register(String username, String password, String email) throws Exception {
+    public String register(String username, String password, String email) throws Exception {
         // Specify the desired endpoint
         URI uri = new URI("http://localhost:8080/user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -59,8 +61,47 @@ public class ServerFacade {
         // Output the response body
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            System.out.println(new Gson().fromJson(inputStreamReader, AuthData.class));
+            AuthData myAuth = new Gson().fromJson(inputStreamReader, AuthData.class);
+            System.out.println(myAuth);
+            return myAuth.authToken();
         }
+    }
+
+
+
+    public void logout(String authToken) throws Exception {
+        // Specify the desired endpoint
+        URI uri = new URI("http://localhost:8080/session");
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod("DELETE");
+
+
+
+        // Specify that we are going to write out data
+        http.setDoOutput(true);
+        // Write out a header
+        http.addRequestProperty("authorization", authToken);
+
+        // Write out the body
+
+        /**
+        try (var outputStream = http.getOutputStream()) {
+            var jsonBody = new Gson().toJson(request);
+            outputStream.write(jsonBody.getBytes());
+        }
+        */
+
+
+        // Make the request
+        http.connect();
+
+        // Output the response body
+        /**
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            System.out.println(new Gson().fromJson(inputStreamReader, String.class));
+        }
+        */
     }
 
 }

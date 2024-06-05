@@ -62,8 +62,8 @@ public class PregameUI {
                  */
 
                 try {
-                    fake.login(username, password);
-                    postLoginUI(out);
+                    //fake.login(username, password);
+                    postLoginUI(out, fake.login(username, password));
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
@@ -92,8 +92,8 @@ public class PregameUI {
                  * return to preLoginUI
                  */
                 try {
-                    fake.register(username, password, email);
-                    postLoginUI(out);
+                    //fake.register(username, password, email);
+                    postLoginUI(out, fake.register(username, password, email));
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
@@ -112,7 +112,7 @@ public class PregameUI {
         }
     }
 
-    public void postLoginUI(PrintStream out) {
+    public void postLoginUI(PrintStream out, String authToken) {
         Scanner scanner = new Scanner(System.in);
         out.print(SET_TEXT_COLOR_GREEN);
         out.print("[LOGGED IN] >>> ");
@@ -126,10 +126,18 @@ public class PregameUI {
                 tableWriter(out, "logout", "when you are done");
                 tableWriter(out, "quit", "playing chess");
                 tableWriter(out, "help", "with possible commands");
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "logout")) {
-                preLoginUI(out);
+                try {
+                    fake.logout(authToken);
+                    preLoginUI(out);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    postLoginUI(out, authToken);
+                }
+                //preLoginUI(out);
             }
             else if (Objects.equals(input, "create")) {
                 String gameName = scanner.next();
@@ -141,7 +149,7 @@ public class PregameUI {
                  * catch exception
                  * go to postLoginUI
                  */
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "list")) {
                 /**
@@ -152,7 +160,7 @@ public class PregameUI {
                  * catch exception
                  * go to postLoginUI
                  */
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "join")) {
                 int gameID = scanner.nextInt();
@@ -168,11 +176,11 @@ public class PregameUI {
                 GamePlayDrawing.printBoard(out, true, myBoard);
                 out.println();
                 GamePlayDrawing.printBoard(out, false, myBoard);
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "observe")) {
                 int gameID = scanner.nextInt();
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
             else {
                 out.print(SET_BG_COLOR_BLACK);
@@ -180,7 +188,7 @@ public class PregameUI {
                 out.print("Please try again. Type \"help\" if you need assistance.");
                 out.print(RESET_BG_COLOR);
                 out.println();
-                postLoginUI(out);
+                postLoginUI(out, authToken);
             }
         }
     }
