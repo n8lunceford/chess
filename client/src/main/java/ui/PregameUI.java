@@ -160,6 +160,14 @@ public class PregameUI {
                  * catch exception
                  * go to postLoginUI
                  */
+                try {
+                    fake.listGames(authToken);
+                    postLoginUI(out, authToken);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    postLoginUI(out, authToken);
+                }
                 postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "join")) {
