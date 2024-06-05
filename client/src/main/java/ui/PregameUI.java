@@ -10,10 +10,6 @@ import static ui.EscapeSequences.*;
 
 public class PregameUI {
 
-    //public static void main(String[] args) {
-        //beginJourney();
-    //}
-
     private ServerFacade fake;
 
     public PregameUI() {
@@ -53,24 +49,15 @@ public class PregameUI {
                 out.println();
                 out.print("  Password: " + password);
                 out.println();
-                /**
-                 * try login
-                 * go to postLoginUI
-                 *
-                 * catch exception
-                 * return to preLoginUI
-                 */
-
                 try {
                     //fake.login(username, password);
                     postLoginUI(out, fake.login(username, password));
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
+                    out.println();
                     preLoginUI(out);
                 }
-
-                //postLoginUI(out);
             }
             else if (input.startsWith("register")) {
                 String username = scanner.next();
@@ -84,29 +71,18 @@ public class PregameUI {
                 out.println();
                 out.print("  Email: " + email);
                 out.println();
-                /**
-                 * try registration
-                 * go to postLoginUI
-                 *
-                 * catch exception
-                 * return to preLoginUI
-                 */
                 try {
                     //fake.register(username, password, email);
                     postLoginUI(out, fake.register(username, password, email));
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
+                    out.println();
                     preLoginUI(out);
                 }
-                //postLoginUI(out);
             }
             else {
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(SET_TEXT_COLOR_WHITE);
-                out.print("Please try again. Type \"help\" if you need assistance.");
-                out.print(RESET_BG_COLOR);
-                out.println();
+                pleaseTryAgain(out);
                 preLoginUI(out);
             }
         }
@@ -149,23 +125,24 @@ public class PregameUI {
                  * catch exception
                  * go to postLoginUI
                  */
+                try {
+                    fake.createGame(authToken, gameName);
+                    postLoginUI(out, authToken);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    postLoginUI(out, authToken);
+                }
                 postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "list")) {
-                /**
-                 * try listGames
-                 * retrieve games
-                 * go to postLoginUI
-                 *
-                 * catch exception
-                 * go to postLoginUI
-                 */
                 try {
                     fake.listGames(authToken);
                     postLoginUI(out, authToken);
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
+                    out.println();
                     postLoginUI(out, authToken);
                 }
                 postLoginUI(out, authToken);
@@ -191,14 +168,18 @@ public class PregameUI {
                 postLoginUI(out, authToken);
             }
             else {
-                out.print(SET_BG_COLOR_BLACK);
-                out.print(SET_TEXT_COLOR_WHITE);
-                out.print("Please try again. Type \"help\" if you need assistance.");
-                out.print(RESET_BG_COLOR);
-                out.println();
+                pleaseTryAgain(out);
                 postLoginUI(out, authToken);
             }
         }
+    }
+
+    private void pleaseTryAgain(PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_WHITE);
+        out.print("Please try again. Type \"help\" if you need assistance.");
+        out.print(RESET_BG_COLOR);
+        out.println();
     }
 
     private void tableWriter(PrintStream out, String message, String explanation) {
