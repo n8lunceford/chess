@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import model.GameData;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -136,8 +137,13 @@ public class PregameUI {
                 postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "list")) {
+                out.print(SET_TEXT_COLOR_WHITE);
                 try {
-                    fake.listGames(authToken);
+                    ArrayList<GameData> games = fake.listGames(authToken);
+                    for (GameData game : games) {
+                        out.print("  " + game);
+                        out.println();
+                    }
                     postLoginUI(out, authToken);
                 }
                 catch (Exception exception) {

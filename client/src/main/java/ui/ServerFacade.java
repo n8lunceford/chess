@@ -7,6 +7,7 @@ import model.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.ArrayList;
 
 public class ServerFacade {
 
@@ -102,7 +103,7 @@ public class ServerFacade {
         */
     }
 
-    public void listGames(String authToken) throws Exception {
+    public ArrayList<GameData> listGames(String authToken) throws Exception {
         // Specify the desired endpoint
         URI uri = new URI("http://localhost:8080/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -131,8 +132,10 @@ public class ServerFacade {
         // Output the response body
 
          try (InputStream respBody = http.getInputStream()) {
-         InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-         System.out.println(new Gson().fromJson(inputStreamReader, GameData.class));
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            ListGamesResult games = new Gson().fromJson(inputStreamReader, ListGamesResult.class);
+            //System.out.println();
+             return games.games();
          }
 
     }
