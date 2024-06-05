@@ -91,7 +91,15 @@ public class PregameUI {
                  * catch exception
                  * return to preLoginUI
                  */
-                postLoginUI(out);
+                try {
+                    fake.register(username, password, email);
+                    postLoginUI(out);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    preLoginUI(out);
+                }
+                //postLoginUI(out);
             }
             else {
                 out.print(SET_BG_COLOR_BLACK);
