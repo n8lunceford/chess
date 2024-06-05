@@ -10,14 +10,18 @@ import static ui.EscapeSequences.*;
 
 public class PregameUI {
 
-    public static void main(String[] args) {
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        beginJourney(out);
+    //public static void main(String[] args) {
+        //beginJourney();
+    //}
+
+    private ServerFacade fake;
+
+    public PregameUI() {
+        fake = new ServerFacade();
     }
 
-
-
-    public static void beginJourney(PrintStream out) {
+    public void beginJourney() {
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
@@ -28,7 +32,7 @@ public class PregameUI {
         preLoginUI(out);
     }
 
-    public static void preLoginUI(PrintStream out) {
+    public void preLoginUI(PrintStream out) {
         Scanner scanner = new Scanner(System.in);
         out.print(SET_TEXT_COLOR_RED);
         out.print("[LOGGED OUT] >>> ");
@@ -44,10 +48,10 @@ public class PregameUI {
             else if (input.startsWith("login")) {
                 String username = scanner.next();
                 String password = scanner.next();
-
-                out.print("Username: " + username);
+                out.print(SET_TEXT_COLOR_WHITE);
+                out.print("  Username: " + username);
                 out.println();
-                out.print("Password: " + password);
+                out.print("  Password: " + password);
                 out.println();
                 /**
                  * try login
@@ -56,18 +60,29 @@ public class PregameUI {
                  * catch exception
                  * return to preLoginUI
                  */
-                postLoginUI(out);
+
+                try {
+                    fake.login(username, password);
+                    postLoginUI(out);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    preLoginUI(out);
+                }
+
+                //postLoginUI(out);
             }
             else if (input.startsWith("register")) {
                 String username = scanner.next();
                 String password = scanner.next();
                 String email = scanner.next();
 
-                out.print("Username: " + username);
+                out.print(SET_TEXT_COLOR_WHITE);
+                out.print("  Username: " + username);
                 out.println();
-                out.print("Password: " + password);
+                out.print("  Password: " + password);
                 out.println();
-                out.print("Email: " + email);
+                out.print("  Email: " + email);
                 out.println();
                 /**
                  * try registration
@@ -89,7 +104,7 @@ public class PregameUI {
         }
     }
 
-    public static void postLoginUI(PrintStream out) {
+    public void postLoginUI(PrintStream out) {
         Scanner scanner = new Scanner(System.in);
         out.print(SET_TEXT_COLOR_GREEN);
         out.print("[LOGGED IN] >>> ");
@@ -162,9 +177,9 @@ public class PregameUI {
         }
     }
 
-    private static void tableWriter(PrintStream out, String message, String explanation) {
+    private void tableWriter(PrintStream out, String message, String explanation) {
         out.print("  ");
-        out.print(SET_TEXT_COLOR_BLUE);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
         out.print(message);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print(" --> " + explanation);
