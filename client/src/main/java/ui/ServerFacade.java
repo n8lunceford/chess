@@ -65,6 +65,13 @@ public class ServerFacade {
         http.addRequestProperty("authorization", authToken);
         // Make the request
         http.connect();
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            //System.out.println(new Gson().fromJson(inputStreamReader, int.class));
+            //System.out.print(inputStreamReader);
+        }
+
     }
 
     public ArrayList<GameData> listGames(String authToken) throws Exception {
@@ -139,5 +146,10 @@ public class ServerFacade {
         http.setRequestMethod("DELETE");
         http.setDoOutput(true);
         http.connect();
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            //System.out.println(new Gson().fromJson(inputStreamReader, int.class));
+            //System.out.print(inputStreamReader);
+        }
     }
 }
