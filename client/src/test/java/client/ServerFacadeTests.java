@@ -27,13 +27,10 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
     @Test
     public void sampleTest() {
         Assertions.assertTrue(true);
     }
-
-
 
     @Test
     @Order(1)
@@ -43,18 +40,14 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(() -> fake.register("myUser", "myPassword", "myEmail"));
     }
 
-
-
     @Test
     @Order(2)
     @DisplayName("Bad Registration")
-    public void badRegistration() throws Exception {
+    public void badRegistration() {
         Assertions.assertThrows(Exception.class, () -> fake.register(null, "myPassword", "myEmail"));
         Assertions.assertThrows(Exception.class, () -> fake.register("myUser", null, "myEmail"));
         Assertions.assertThrows(Exception.class, () -> fake.register("myUser", "myPassword", null));
     }
-
-
 
     @Test
     @Order(3)
@@ -65,8 +58,6 @@ public class ServerFacadeTests {
         fake.logout(authToken);
         Assertions.assertDoesNotThrow(() -> fake.login("myUser", "myPassword"));
     }
-
-
 
     @Test
     @Order(4)
@@ -91,8 +82,6 @@ public class ServerFacadeTests {
         String secondToken = fake.login("myUser", "myPassword");
         Assertions.assertDoesNotThrow(() -> fake.logout(secondToken));
     }
-
-
 
     @Test
     @Order(6)
@@ -132,7 +121,27 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> fake.listGames("not the auth token"));
     }
 
+    @Test
+    @Order(9)
+    @DisplayName("Good Create Game")
+    public void goodCreateGame() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        Assertions.assertDoesNotThrow(() -> fake.createGame(authToken, "firstGame"));
+        Assertions.assertDoesNotThrow(() -> fake.createGame(authToken, "firstGame"));
+        Assertions.assertEquals(2, fake.listGames(authToken).size());
+    }
 
+    @Test
+    @Order(10)
+    @DisplayName("Bad Create Game")
+    public void badCreateGame() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        Assertions.assertThrows(Exception.class, () -> fake.createGame(authToken + "yes", "firstGame"));
+        Assertions.assertDoesNotThrow(() -> fake.createGame(authToken, "firstGame"));
+        Assertions.assertEquals(1, fake.listGames(authToken).size());
+    }
 
     @Test
     @Order(11)
@@ -144,8 +153,6 @@ public class ServerFacadeTests {
         Assertions.assertDoesNotThrow(() -> fake.joinGame(authToken, ChessGame.TeamColor.BLACK, gameID));
         Assertions.assertEquals("myUser", fake.listGames(authToken).getFirst().blackUsername());
     }
-
-
 
     @Test
     @Order(12)
@@ -159,8 +166,6 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> fake.joinGame(authToken, ChessGame.TeamColor.BLACK, 0));
         Assertions.assertNotEquals("myUser", fake.listGames(authToken).getFirst().blackUsername());
     }
-
-
 
     @Test
     @Order(13)
