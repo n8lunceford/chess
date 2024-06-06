@@ -119,14 +119,6 @@ public class PregameUI {
             }
             else if (Objects.equals(input, "create")) {
                 String gameName = scanner.next();
-                /**
-                 * try createGame
-                 * retrieve gameID
-                 * go to postLoginUI
-                 *
-                 * catch exception
-                 * go to postLoginUI
-                 */
                 try {
                     fake.createGame(authToken, gameName);
                     out.println();
