@@ -15,7 +15,7 @@ public class PregameUI {
     private ServerFacade fake;
 
     public PregameUI() {
-        fake = new ServerFacade();
+        fake = new ServerFacade(8080);
     }
 
     public void beginJourney() {

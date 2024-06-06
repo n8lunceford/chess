@@ -9,10 +9,10 @@ import ui.ServerFacade;
 public class ServerFacadeTests {
 
     private static Server server;
-    private ServerFacade fake;
+    private static ServerFacade fake;
 
     public ServerFacadeTests() throws Exception {
-        fake = new ServerFacade();
+        //fake = new ServerFacade();
     }
 
     @BeforeAll
@@ -20,6 +20,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        fake = new ServerFacade(port);
     }
 
     @AfterAll

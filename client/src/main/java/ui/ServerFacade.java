@@ -11,9 +11,15 @@ import java.util.ArrayList;
 
 public class ServerFacade {
 
+    private int port;
+
+    public ServerFacade(int port) {
+        this.port = port;
+    }
+
     public String login(String username, String password) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/session");
+        URI uri = new URI("http://localhost:" + port + "/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         // Specify that we are going to write out data
@@ -30,7 +36,7 @@ public class ServerFacade {
 
     public String register(String username, String password, String email) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/user");
+        URI uri = new URI("http://localhost:" + port + "/user");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         http.setDoOutput(true);
@@ -56,7 +62,7 @@ public class ServerFacade {
 
     public void logout(String authToken) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/session");
+        URI uri = new URI("http://localhost:" + port + "/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("DELETE");
         // Specify that we are going to write out data
@@ -76,7 +82,7 @@ public class ServerFacade {
 
     public ArrayList<GameData> listGames(String authToken) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/game");
+        URI uri = new URI("http://localhost:" + port + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("GET");
         // Specify that we are going to write out data
@@ -96,7 +102,7 @@ public class ServerFacade {
 
     public int createGame(String authToken, String gameName) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/game");
+        URI uri = new URI("http://localhost:" + port + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("POST");
         // Specify that we are going to write out data
@@ -123,7 +129,7 @@ public class ServerFacade {
 
     public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws Exception {
         // Specify the desired endpoint
-        URI uri = new URI("http://localhost:8080/game");
+        URI uri = new URI("http://localhost:" + port + "/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("PUT");
         // Specify that we are going to write out data
@@ -151,7 +157,7 @@ public class ServerFacade {
     }
 
     public void clear() throws Exception {
-        URI uri = new URI("http://localhost:8080/db");
+        URI uri = new URI("http://localhost:" + port + "/db");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("DELETE");
         http.setDoOutput(true);
