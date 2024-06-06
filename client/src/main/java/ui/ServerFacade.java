@@ -18,8 +18,6 @@ public class ServerFacade {
         http.setRequestMethod("POST");
         // Specify that we are going to write out data
         http.setDoOutput(true);
-        // Write out a header
-        //http.addRequestProperty("Content-Type", "application/json");
         // Write out the body
         LoginRequest request = new LoginRequest(username, password);
         try (var outputStream = http.getOutputStream()) {
@@ -27,14 +25,7 @@ public class ServerFacade {
             outputStream.write(jsonBody.getBytes());
         }
         // Make the request
-        http.connect();
-        // Output the response body
-        try (InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            AuthData myAuth = new Gson().fromJson(inputStreamReader, AuthData.class);
-            System.out.println(myAuth);
-            return myAuth.authToken();
-        }
+        return openDoors(http);
     }
 
     public String register(String username, String password, String email) throws Exception {
@@ -49,6 +40,10 @@ public class ServerFacade {
             outputStream.write(jsonBody.getBytes());
         }
         // Make the request
+        return openDoors(http);
+    }
+
+    private String openDoors(HttpURLConnection http) throws Exception {
         http.connect();
         // Output the response body
         try (InputStream respBody = http.getInputStream()) {
@@ -64,26 +59,12 @@ public class ServerFacade {
         URI uri = new URI("http://localhost:8080/session");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
         http.setRequestMethod("DELETE");
-
         // Specify that we are going to write out data
         http.setDoOutput(true);
         // Write out a header
         http.addRequestProperty("authorization", authToken);
-        // Write out the body
-
-        //try (var outputStream = http.getOutputStream()) {
-        //    var jsonBody = new Gson().toJson(request);
-        //    outputStream.write(jsonBody.getBytes());
-        //}
-
         // Make the request
         http.connect();
-        // Output the response body
-
-        //try (InputStream respBody = http.getInputStream()) {
-        //    InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-        //    System.out.println(new Gson().fromJson(inputStreamReader, String.class));
-        //}
     }
 
     public ArrayList<GameData> listGames(String authToken) throws Exception {
@@ -95,25 +76,15 @@ public class ServerFacade {
         http.setDoOutput(true);
         // Write out a header
         http.addRequestProperty("authorization", authToken);
-        // Write out the body
-
-         //try (var outputStream = http.getOutputStream()) {
-         //var jsonBody = new Gson().toJson(request);
-         //outputStream.write(jsonBody.getBytes());
-         //}
-
         // Make the request
         http.connect();
-
         // Output the response body
-
          try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             ListGamesResult games = new Gson().fromJson(inputStreamReader, ListGamesResult.class);
             //System.out.println();
              return games.games();
          }
-
     }
 
     public void createGame(String authToken, String gameName) throws Exception {
@@ -130,14 +101,6 @@ public class ServerFacade {
         try (var outputStream = http.getOutputStream()) {
             var jsonBody = new Gson().toJson(request);
             outputStream.write(jsonBody.getBytes());
-        }
-        // Make the request
-        http.connect();
-        // Output the response body
-        try (InputStream respBody = http.getInputStream()) {
-            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            //System.out.println(new Gson().fromJson(inputStreamReader, int.class));
-            System.out.print(inputStreamReader);
         }
     }
 
@@ -177,5 +140,4 @@ public class ServerFacade {
         http.setDoOutput(true);
         http.connect();
     }
-
 }
