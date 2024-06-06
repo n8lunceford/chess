@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import model.GameData;
 
 import java.io.PrintStream;
@@ -128,13 +129,13 @@ public class PregameUI {
                  */
                 try {
                     fake.createGame(authToken, gameName);
+                    out.println();
                     postLoginUI(out, authToken);
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     postLoginUI(out, authToken);
                 }
-                postLoginUI(out, authToken);
             }
             else if (Objects.equals(input, "list")) {
                 out.print(SET_TEXT_COLOR_WHITE);
@@ -155,19 +156,35 @@ public class PregameUI {
             }
             else if (Objects.equals(input, "join")) {
                 int gameID = scanner.nextInt();
-                /**
-                 * try joinGame
-                 * go to postLoginUI
-                 *
-                 * catch exception
-                 * go to postLoginUI
-                 */
-                ChessBoard myBoard = new ChessBoard();
-                myBoard.resetBoard();
-                GamePlayDrawing.printBoard(out, true, myBoard);
-                out.println();
-                GamePlayDrawing.printBoard(out, false, myBoard);
-                postLoginUI(out, authToken);
+                String teamColor = scanner.next();
+                if (Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "BLACK")) {
+                    try {
+                        ChessGame.TeamColor playerColor;
+                        if (teamColor.equals("WHITE")) {
+                            playerColor = ChessGame.TeamColor.WHITE;
+                        }
+                        else {
+                            playerColor = ChessGame.TeamColor.BLACK;
+                        }
+                        fake.joinGame(authToken, playerColor, gameID);
+
+                        ChessBoard myBoard = new ChessBoard();
+                        myBoard.resetBoard();
+                        out.println();
+                        GamePlayDrawing.printBoard(out, true, myBoard);
+                        out.println();
+                        GamePlayDrawing.printBoard(out, false, myBoard);
+                        postLoginUI(out, authToken);
+                    } catch (Exception exception) {
+                        out.print(exception.getMessage());
+                        out.println();
+                        postLoginUI(out, authToken);
+                    }
+                }
+                else {
+                    pleaseTryAgain(out);
+                    postLoginUI(out, authToken);
+                }
             }
             else if (Objects.equals(input, "observe")) {
                 int gameID = scanner.nextInt();
