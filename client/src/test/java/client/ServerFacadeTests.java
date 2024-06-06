@@ -105,6 +105,32 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> fake.logout(secondToken));
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("Good List Games")
+    public void goodListGames() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        fake.createGame(authToken, "firstGame");
+        fake.createGame(authToken, "secondGame");
+        Assertions.assertDoesNotThrow(() -> fake.listGames(authToken));
+        fake.listGames(authToken);
+        Assertions.assertEquals(2, fake.listGames(authToken).size());
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Bad List Games")
+    public void badListGames() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        Assertions.assertDoesNotThrow(() -> fake.listGames(authToken));
+        Assertions.assertThrows(Exception.class, () -> fake.createGame(authToken, null));
+        Assertions.assertThrows(Exception.class, () -> fake.createGame(authToken + "something else", "myGame"));
+        Assertions.assertEquals(0, fake.listGames(authToken).size());
+        Assertions.assertThrows(Exception.class, () -> fake.listGames("not the auth token"));
+    }
+
 
 
     @Test
@@ -112,6 +138,15 @@ public class ServerFacadeTests {
     @DisplayName("Good Registration")
     public void goodClear() throws Exception {
         Assertions.assertDoesNotThrow(() -> fake.clear());
+        fake.clear();
+        Assertions.assertDoesNotThrow(() -> fake.clear());
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        fake.createGame(authToken, "firstGame");
+        fake.createGame(authToken, "secondGame");
+        fake.listGames(authToken);
+        Assertions.assertEquals(2, fake.listGames(authToken).size());
+        fake.clear();
+        Assertions.assertThrows(Exception.class, () -> fake.listGames(authToken).size());
     }
 
 }

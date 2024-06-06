@@ -90,7 +90,7 @@ public class ServerFacade {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
             ListGamesResult games = new Gson().fromJson(inputStreamReader, ListGamesResult.class);
             //System.out.println();
-             return games.games();
+            return games.games();
          }
     }
 
@@ -109,6 +109,7 @@ public class ServerFacade {
             var jsonBody = new Gson().toJson(request);
             outputStream.write(jsonBody.getBytes());
         }
+        comeIn(http);
     }
 
     public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws Exception {
