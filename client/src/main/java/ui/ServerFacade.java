@@ -94,7 +94,7 @@ public class ServerFacade {
          }
     }
 
-    public void createGame(String authToken, String gameName) throws Exception {
+    public int createGame(String authToken, String gameName) throws Exception {
         // Specify the desired endpoint
         URI uri = new URI("http://localhost:8080/game");
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
@@ -109,7 +109,16 @@ public class ServerFacade {
             var jsonBody = new Gson().toJson(request);
             outputStream.write(jsonBody.getBytes());
         }
-        comeIn(http);
+        //comeIn(http);
+
+        http.connect();
+        // Output the response body
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            CreateGameResult gameID = new Gson().fromJson(inputStreamReader, CreateGameResult.class);
+            //System.out.print(inputStreamReader);
+            return gameID.gameID();
+        }
     }
 
     public void joinGame(String authToken, ChessGame.TeamColor playerColor, int gameID) throws Exception {

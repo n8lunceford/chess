@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
@@ -129,6 +130,34 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> fake.createGame(authToken + "something else", "myGame"));
         Assertions.assertEquals(0, fake.listGames(authToken).size());
         Assertions.assertThrows(Exception.class, () -> fake.listGames("not the auth token"));
+    }
+
+
+
+    @Test
+    @Order(11)
+    @DisplayName("Good Join Game")
+    public void goodJoinGame() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        int gameID = fake.createGame(authToken, "firstGame");
+        Assertions.assertDoesNotThrow(() -> fake.joinGame(authToken, ChessGame.TeamColor.BLACK, gameID));
+        Assertions.assertEquals("myUser", fake.listGames(authToken).getFirst().blackUsername());
+    }
+
+
+
+    @Test
+    @Order(12)
+    @DisplayName("Good Join Game")
+    public void badJoinGame() throws Exception {
+        fake.clear();
+        String authToken = fake.register("myUser", "myPassword", "myEmail");
+        fake.createGame(authToken, "firstGame");
+        fake.createGame(authToken, "secondGame");
+        Assertions.assertThrows(Exception.class, () -> fake.joinGame(authToken, null, fake.listGames(authToken).getFirst().gameID()));
+        Assertions.assertThrows(Exception.class, () -> fake.joinGame(authToken, ChessGame.TeamColor.BLACK, 0));
+        Assertions.assertNotEquals("myUser", fake.listGames(authToken).getFirst().blackUsername());
     }
 
 
