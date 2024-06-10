@@ -33,15 +33,53 @@ public class GamePlayDrawing {
         ChessBoard myBoard = new ChessBoard();
         myBoard.resetBoard();
         boolean whiteTurn = true;
-        printBoard(out, whiteTurn, myBoard);
+        TwoBools[][] legalMoves = cleanLook();
+        printBoard(out, whiteTurn, myBoard, legalMoves);
         spacer(out);
-        printBoard(out, !whiteTurn, myBoard);
+        printBoard(out, !whiteTurn, myBoard, legalMoves);
     }
 
-    public static void printBoard(PrintStream out, boolean whiteTurn, ChessBoard myBoard) {
+    public static TwoBools[][] cleanLook() {
+        TwoBools[][] legalMoves = new TwoBools[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                legalMoves[i][j] = new TwoBools();
+            }
+        }
+        return legalMoves;
+    }
+
+    public static TwoBools[][] potentialMoves(boolean whiteTurn, ChessGame myGame, ChessPosition myPosition) {
+        TwoBools[][] moves = cleanLook();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                moves[i][j] = new TwoBools();
+            }
+        }
+
+        for (ChessMove move : myGame.validMoves(myPosition)) {
+            if (whiteTurn) {
+                moves[8 - move.getEndPosition().getRow()][move.getEndPosition().getColumn() - 1].setMove(true);
+            }
+            else {
+                moves[move.getEndPosition().getRow() - 1][8 - move.getEndPosition().getColumn()].setMove(true);
+            }
+        }
+
+        if (whiteTurn) {
+            moves[8 - myPosition.getRow()][myPosition.getColumn() - 1].setPiece(true);
+        }
+        else {
+            moves[myPosition.getRow() - 1][8 - myPosition.getColumn()].setPiece(true);
+        }
+
+        return moves;
+    }
+
+    public static void printBoard(PrintStream out, boolean whiteTurn, ChessBoard myBoard, TwoBools[][] legalMoves) {
         out.print(ERASE_SCREEN);
         drawHeaders(out, whiteTurn);
-        drawBoard(out, whiteTurn, myBoard);
+        drawBoard(out, whiteTurn, myBoard, legalMoves);
         drawHeaders(out, whiteTurn);
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
@@ -143,7 +181,7 @@ public class GamePlayDrawing {
         setLightGrey(out);
     }
 
-    private static void drawBoard(PrintStream out, boolean whiteTurn, ChessBoard boardValues) {
+    private static void drawBoard(PrintStream out, boolean whiteTurn, ChessBoard boardValues, TwoBools[][] legalMoves) {
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             boolean isEven = (boardRow % 2 == 0);
@@ -156,7 +194,7 @@ public class GamePlayDrawing {
                 out.print(" " + (boardRow + 1) + "\u2003");
             }
             setLightGrey(out);
-            drawRowOfSquares(out, boardRow, isEven, whiteTurn, boardValues);
+            drawRowOfSquares(out, boardRow, isEven, whiteTurn, boardValues, legalMoves);
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.print(SET_TEXT_COLOR_BLACK);
             if (whiteTurn) {
@@ -174,7 +212,7 @@ public class GamePlayDrawing {
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, int boardRow, boolean isEven, boolean whiteTurn, ChessBoard boardValues) {
+    private static void drawRowOfSquares(PrintStream out, int boardRow, boolean isEven, boolean whiteTurn, ChessBoard boardValues, TwoBools[][] legalMoves) {
 
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_CHARS; ++squareRow) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
@@ -194,7 +232,7 @@ public class GamePlayDrawing {
                 else {
                     myBoard = blackBoard(boardValues);
                 }
-                printPlayer(out, myBoard[7 - boardRow][boardCol], isWhite);
+                printPlayer(out, myBoard[7 - boardRow][boardCol], isWhite, legalMoves[boardRow][boardCol].getMove(), legalMoves[boardRow][boardCol].getPiece());
 
                 if (isWhite)
                     setBlack(out);
@@ -204,13 +242,29 @@ public class GamePlayDrawing {
         }
     }
 
-    private static void printPlayer(PrintStream out, String player, boolean isWhite) {
+    private static void printPlayer(PrintStream out, String player, boolean isWhite, boolean move, boolean piece) {
 
         if (isWhite) {
-            out.print(SET_BG_COLOR_WHITE);
+            if (!move && !piece) {
+                out.print(SET_BG_COLOR_WHITE);
+            }
+            else if (move && !piece) {
+                out.print(SET_BG_COLOR_GREEN);
+            }
+            else {
+                out.print(SET_BG_COLOR_YELLOW);
+            }
         }
         else {
-            out.print(SET_BG_COLOR_BLACK);
+            if (!move && !piece) {
+                out.print(SET_BG_COLOR_BLACK);
+            }
+            else if (move && !piece) {
+                out.print(SET_BG_COLOR_DARK_GREEN);
+            }
+            else {
+                out.print(SET_BG_COLOR_YELLOW);
+            }
         }
         if (Objects.equals(player, " ♔ ") || Objects.equals(player, " ♕ ")
                 || Objects.equals(player, " ♗ ") || Objects.equals(player, " ♘ ")

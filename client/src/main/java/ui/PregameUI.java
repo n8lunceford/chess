@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPosition;
 import model.GameData;
 
 import java.io.PrintStream;
@@ -160,12 +161,24 @@ public class PregameUI {
                         }
                         fake.joinGame(authToken, playerColor, gameID);
 
-                        ChessBoard myBoard = new ChessBoard();
-                        myBoard.resetBoard();
+                        ArrayList<GameData> games = fake.listGames(authToken);
+                        ChessGame myGame = new ChessGame();
+                        for (GameData game : games) {
+                            if (game.gameID() == gameID) {
+                                myGame = game.game();
+                            }
+                        }
+
+                        //ChessBoard myBoard = new ChessBoard();
+                        ChessBoard myBoard = myGame.getBoard();
+                        //myBoard.resetBoard();
                         out.println();
-                        GamePlayDrawing.printBoard(out, true, myBoard);
+                        //TwoBools[][] legalMoves = GamePlayDrawing.cleanLook();
+                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, myGame, new ChessPosition(2, 2));
+                        GamePlayDrawing.printBoard(out, true, myBoard, legalMoves);
                         out.println();
-                        GamePlayDrawing.printBoard(out, false, myBoard);
+                        legalMoves = GamePlayDrawing.potentialMoves(false, myGame, new ChessPosition(2, 2));
+                        GamePlayDrawing.printBoard(out, false, myBoard, legalMoves);
                         postLoginUI(out, authToken);
                     } catch (Exception exception) {
                         out.print(exception.getMessage());
@@ -189,7 +202,7 @@ public class PregameUI {
         }
     }
 
-    private void pleaseTryAgain(PrintStream out) {
+    public static void pleaseTryAgain(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_WHITE);
         out.print("Please try again. Type \"help\" if you need assistance.");
@@ -197,7 +210,7 @@ public class PregameUI {
         out.println();
     }
 
-    private void tableWriter(PrintStream out, String message, String explanation) {
+    public static void tableWriter(PrintStream out, String message, String explanation) {
         out.print("  ");
         out.print(SET_TEXT_COLOR_LIGHT_GREY);
         out.print(message);
