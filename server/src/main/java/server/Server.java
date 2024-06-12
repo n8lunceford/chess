@@ -1,5 +1,6 @@
 package server;
 
+import handlers.WebSocketHandler;
 import services.*;
 import com.google.gson.Gson;
 
@@ -32,6 +33,7 @@ public class Server {
         Spark.staticFiles.location("/web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.webSocket("/ws", new WebSocketHandler(authDAO, userDAO, gameDAO));
         Spark.post("/user", this::registration);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
