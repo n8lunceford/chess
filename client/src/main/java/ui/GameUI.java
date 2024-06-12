@@ -1,5 +1,12 @@
 package ui;
 
+import facade.Observer;
+import facade.WebSocketClient;
+import model.GameData;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGame;
+import websocket.messages.Notification;
+
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Scanner;
@@ -7,7 +14,13 @@ import java.util.Scanner;
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 import static ui.EscapeSequences.SET_TEXT_COLOR_WHITE;
 
-public class GameUI {
+public class GameUI implements Observer {
+
+    WebSocketClient client;
+
+    GameUI() throws Exception {
+        client = new WebSocketClient(this);
+    }
 
     public void gamePlayUI(PrintStream out, String authToken) {
         Scanner scanner = new Scanner(System.in);
@@ -150,4 +163,18 @@ public class GameUI {
         }
     }
 
+    @Override
+    public void loadGame(LoadGame loadGame) {
+
+    }
+
+    @Override
+    public void errorMessage(ErrorMessage errorMessage) {
+
+    }
+
+    @Override
+    public void notification(Notification notification) {
+
+    }
 }
