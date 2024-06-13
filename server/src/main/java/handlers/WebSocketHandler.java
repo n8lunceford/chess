@@ -49,7 +49,6 @@ public class WebSocketHandler {
                     Connect connect = new Gson().fromJson(message, Connect.class);
                     connect(session, username, connect);
                 }
-                //connect(session, username, (Connect) command);
                 case MAKE_MOVE -> {
                     MakeMove makeMove = new Gson().fromJson(message, MakeMove.class);
                     makeMove(session, username, makeMove);
@@ -57,12 +56,11 @@ public class WebSocketHandler {
                 case LEAVE -> {
                     Leave leave = new Gson().fromJson(message, Leave.class);
                     leaveGame(session, username, leave);
-                } //leaveGame(session, username, (Leave) command);
+                }
                 case RESIGN -> {
                     Resign resign = new Gson().fromJson(message, Resign.class);
                     resign(session, username, resign);
                 }
-                // resign(session, username, (Resign) command);
             }
         }
         catch (Exception ex) {
@@ -101,49 +99,52 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, String username, MakeMove command) throws DataAccessException, InvalidMoveException, Exception {
 
-        //try {
         if (gameDAO.getGame(command.getGameID()) != null && myMap.get(command.getGameID()) != null) {
-
             GameData myGameData = gameDAO.getGame(command.getGameID());
             ChessGame myGame = myGameData.game();
-
-            if (((myGameData.whiteUsername() != null
-                && Objects.equals(myGameData.whiteUsername(), username)
-                && myGame.getTeamTurn() == ChessGame.TeamColor.WHITE)
-                || (myGameData.blackUsername() != null
-                && Objects.equals(myGameData.blackUsername(), username)
-                && myGame.getTeamTurn() == ChessGame.TeamColor.BLACK))) {
-
-                try {
-                    myGame.makeMove(command.getMove());
-                    gameDAO.renewGame(myGame, myGameData);
-
-                    for (Session mySession : myMap.get(command.getGameID())) {
-                        if (mySession.isOpen()) {
-                            mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame.getBoard())));
-                            if (session != mySession) {
-                                mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved.")));
+            if (!myGame.resigned()) {
+                if (((myGameData.whiteUsername() != null
+                        && Objects.equals(myGameData.whiteUsername(), username)
+                        && myGame.getTeamTurn() == ChessGame.TeamColor.WHITE)
+                        || (myGameData.blackUsername() != null
+                        && Objects.equals(myGameData.blackUsername(), username)
+                        && myGame.getTeamTurn() == ChessGame.TeamColor.BLACK))) {
+                    try {
+                        myGame.makeMove(command.getMove());
+                        gameDAO.renewGame(myGame, myGameData);
+                        for (Session mySession : myMap.get(command.getGameID())) {
+                            if (mySession.isOpen()) {
+                                mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame.getBoard())));
+                                if (session != mySession) {
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved.")));
+                                }
                             }
                         }
-                    }
 
+                    }
+                    catch (InvalidMoveException ex) {
+                        //ex.printStackTrace();
+                        //throw ex;
+                        if (session.isOpen()) {
+                            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage())));
+                        }
+                    }
                 }
-                catch (InvalidMoveException ex) {
-                    //ex.printStackTrace();
-                    //throw ex;
-                    session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage())));
+                else {
+                    if (session.isOpen()) {
+                        session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + "it wasn\'t " + username + "\'s turn.")));
+                    }
                 }
             }
             else {
-                session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + "it wasn\'t " + username + "\'s turn.")));
+                if (session.isOpen()) {
+                    session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + "the game is over.")));
+                }
             }
-
-
         }
         else {
             throw new DataAccessException("The game does not exist.");
         }
-
     }
 
     private void leaveGame(Session session, String username, Leave command) throws Exception {
@@ -167,8 +168,36 @@ public class WebSocketHandler {
         //session.getRemote().sendString("WebSocket response: " + new Gson().toJson(command));
     }
 
-    private void resign(Session session, String username, Resign command) {
+    private void resign(Session session, String username, Resign command) throws DataAccessException, IOException {
 
+        if (gameDAO.getGame(command.getGameID()) != null && myMap.get(command.getGameID()) != null) {
+            GameData myGameData = gameDAO.getGame(command.getGameID());
+            ChessGame myGame = myGameData.game();
+            if (!myGame.resigned()) {
+                if (Objects.equals(username, myGameData.whiteUsername()) || Objects.equals(username, myGameData.blackUsername())) {
+                    myGame.resign();
+                    gameDAO.renewGame(myGame, myGameData);
+                    for (Session mySession : myMap.get(command.getGameID())) {
+                        if (mySession.isOpen()) {
+                            mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has resigned.")));
+                        }
+                    }
+                }
+                else {
+                    if (session.isOpen()) {
+                        session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + username + " cannot resign due to not being a player.")));
+                    }
+                }
+            }
+            else {
+                if (session.isOpen()) {
+                    session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + "the game was already over.")));
+                }
+            }
+        }
+        else {
+            throw new DataAccessException("The game does not exist.");
+        }
     }
 
     private void saveSession(int gameID, Session session) {

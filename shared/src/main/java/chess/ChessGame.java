@@ -22,9 +22,16 @@ public class ChessGame {
     private boolean blackPawnHalf = false;
     private int whitePawnColumn;
     private int blackPawnColumn;
+    private boolean hasResigned = false;
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
+    }
+    public boolean resigned() {
+        return hasResigned;
+    }
+    public void resign() {
+        hasResigned = true;
     }
     /**
      * @return Which team's turn it is
@@ -391,6 +398,9 @@ public class ChessGame {
                 }
             }
         }
+        if (isDead) {
+            resign();
+        }
         return isDead;
     }
     private ChessBoard cloneKnockoff() {
@@ -450,6 +460,9 @@ public class ChessGame {
         }
         else {
             isCrusty = false;
+        }
+        if (isCrusty) {
+            resign();
         }
         return isCrusty;
     }
