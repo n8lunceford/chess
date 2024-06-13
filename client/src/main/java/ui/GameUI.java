@@ -82,41 +82,13 @@ public class GameUI implements Observer {
                     Leave leave = new Leave(authToken, gameID);
                     leave.setCommandType(UserGameCommand.CommandType.LEAVE);
                     client.send(new Gson().toJson(leave));
-                    //gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
                 }
             } else if (input.startsWith("move")) {
-                String one = scanner.next();
-                String two = scanner.next();
-                String three = "";
-                ChessPosition start = myPlace(one);
-                ChessPosition end = myPlace(two);
-                ChessPiece.PieceType promotion = null;
-                if (board.getPiece(start).getPieceType() == ChessPiece.PieceType.PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
-                    three = scanner.next();
-                }
-                if (Objects.equals(three, "queen")) {
-                    promotion = ChessPiece.PieceType.QUEEN;
-                } else if (Objects.equals(three, "knight")) {
-                    promotion = ChessPiece.PieceType.KNIGHT;
-                } else if (Objects.equals(three, "bishop")) {
-                    promotion = ChessPiece.PieceType.BISHOP;
-                } else if (Objects.equals(three, "rook")) {
-                    promotion = ChessPiece.PieceType.ROOK;
-                }
-                try {
-                    MakeMove makeMove = new MakeMove(authToken, gameID, new ChessMove(start, end, promotion));
-                    makeMove.setCommandType(UserGameCommand.CommandType.MAKE_MOVE);
-                    client.send(new Gson().toJson(makeMove));
-                    gamePlayUI();
-                } catch (Exception exception) {
-                    out.print(exception.getMessage());
-                    out.println();
-                    gamePlayUI();
-                }
+                theMove(out, scanner);
             }
             else if (input.startsWith("resign")) {
                 try {
@@ -150,6 +122,37 @@ public class GameUI implements Observer {
                 PregameUI.pleaseTryAgain(out);
                 gamePlayUI();
             }
+        }
+    }
+
+    private void theMove(PrintStream out, Scanner scanner) {
+        String one = scanner.next();
+        String two = scanner.next();
+        String three = "";
+        ChessPosition start = myPlace(one);
+        ChessPosition end = myPlace(two);
+        ChessPiece.PieceType promotion = null;
+        if (board.getPiece(start).getPieceType() == ChessPiece.PieceType.PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
+            three = scanner.next();
+        }
+        if (Objects.equals(three, "queen")) {
+            promotion = ChessPiece.PieceType.QUEEN;
+        } else if (Objects.equals(three, "knight")) {
+            promotion = ChessPiece.PieceType.KNIGHT;
+        } else if (Objects.equals(three, "bishop")) {
+            promotion = ChessPiece.PieceType.BISHOP;
+        } else if (Objects.equals(three, "rook")) {
+            promotion = ChessPiece.PieceType.ROOK;
+        }
+        try {
+            MakeMove makeMove = new MakeMove(authToken, gameID, new ChessMove(start, end, promotion));
+            makeMove.setCommandType(UserGameCommand.CommandType.MAKE_MOVE);
+            client.send(new Gson().toJson(makeMove));
+            gamePlayUI();
+        } catch (Exception exception) {
+            out.print(exception.getMessage());
+            out.println();
+            gamePlayUI();
         }
     }
 
