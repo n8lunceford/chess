@@ -1,8 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import facade.Observer;
 import facade.WebSocketClient;
@@ -83,17 +81,39 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI();
+                    gamePlayUI();
                 }
             }
             else if (input.startsWith("move")) {
-                try {
 
+                String one = scanner.next();
+                String two = scanner.next();
+                String three = "";
+                ChessPosition start = myPlace(one);
+                ChessPosition end = myPlace(two);
+                ChessPiece.PieceType promotion = null;
+                if (board.getPiece(end).getPieceType() == ChessPiece.PieceType.PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
+                    three = scanner.next();
+                }
+                if (Objects.equals(three, "queen")) {
+                    promotion = ChessPiece.PieceType.QUEEN;
+                }
+                else if (Objects.equals(three, "knight")) {
+                    promotion = ChessPiece.PieceType.KNIGHT;
+                }
+                else if (Objects.equals(three, "bishop")) {
+                    promotion = ChessPiece.PieceType.BISHOP;
+                }
+                else if (Objects.equals(three, "rook")) {
+                    promotion = ChessPiece.PieceType.ROOK;
+                }
+                try {
+                    client.send(new Gson().toJson(new MakeMove(authToken, gameID, new ChessMove(start, end, promotion))));
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI();
+                    gamePlayUI();
                 }
             }
             else if (input.startsWith("resign")) {
@@ -103,7 +123,7 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI();
+                    gamePlayUI();
                 }
             }
             else if (input.startsWith("highlight")) {

@@ -117,7 +117,6 @@ public class PregameUI {
                     out.print(exception.getMessage());
                     postLoginUI(out, authToken);
                 }
-                //preLoginUI(out);
             }
             else if (Objects.equals(input, "create")) {
                 String gameName = scanner.next();
@@ -149,12 +148,6 @@ public class PregameUI {
                 postLoginUI(out, authToken);
             }
 
-
-
-
-
-
-
             else if (Objects.equals(input, "join")) {
                 int gameID = scanner.nextInt();
                 String teamColor = scanner.next();
@@ -174,25 +167,9 @@ public class PregameUI {
                         }
                         fake.joinGame(authToken, playerColor, gameID);
 
-                        ArrayList<GameData> games = fake.listGames(authToken);
-                        ChessGame myGame = new ChessGame();
-                        for (GameData game : games) {
-                            if (game.gameID() == gameID) {
-                                myGame = game.game();
-                            }
-                        }
-
-//                        ChessBoard myBoard = myGame.getBoard();
-//                        out.println();
-//                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, myGame, new ChessPosition(2, 2));
-//                        GamePlayDrawing.printBoard(out, true, myBoard, legalMoves);
-//                        out.println();
-//                        legalMoves = GamePlayDrawing.potentialMoves(false, myGame, new ChessPosition(2, 2));
-//                        GamePlayDrawing.printBoard(out, false, myBoard, legalMoves);
-
                         gamePlay.startGame(authToken, gameID);
-
-                    } catch (Exception exception) {
+                    }
+                    catch (Exception exception) {
                         out.print(exception.getMessage());
                         out.println();
                         postLoginUI(out, authToken);
@@ -204,15 +181,18 @@ public class PregameUI {
                 }
             }
 
-
-
-
-
-
-
             else if (Objects.equals(input, "observe")) {
                 int gameID = scanner.nextInt();
-                postLoginUI(out, authToken);
+                try {
+                    GameUI gamePlay = new GameUI();
+                    gamePlay.setValues("GREY");
+                    gamePlay.startGame(authToken, gameID);
+                }
+                catch (Exception exception) {
+                    out.print(exception.getMessage());
+                    out.println();
+                    postLoginUI(out, authToken);
+                }
             }
             else {
                 pleaseTryAgain(out);
