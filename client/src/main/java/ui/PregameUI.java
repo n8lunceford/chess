@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
+import facade.ServerFacade;
 import model.GameData;
 
 import java.io.PrintStream;
@@ -153,11 +154,16 @@ public class PregameUI {
                 if (Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "BLACK")) {
                     try {
                         ChessGame.TeamColor playerColor;
+
+                        GameUI gamePlay = new GameUI();
+
                         if (teamColor.equals("WHITE")) {
                             playerColor = ChessGame.TeamColor.WHITE;
+                            gamePlay.setColor("WHITE");
                         }
                         else {
                             playerColor = ChessGame.TeamColor.BLACK;
+                            gamePlay.setColor("BLACK");
                         }
                         fake.joinGame(authToken, playerColor, gameID);
 
@@ -169,17 +175,16 @@ public class PregameUI {
                             }
                         }
 
-                        //ChessBoard myBoard = new ChessBoard();
                         ChessBoard myBoard = myGame.getBoard();
-                        //myBoard.resetBoard();
                         out.println();
-                        //TwoBools[][] legalMoves = GamePlayDrawing.cleanLook();
                         TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, myGame, new ChessPosition(2, 2));
                         GamePlayDrawing.printBoard(out, true, myBoard, legalMoves);
                         out.println();
                         legalMoves = GamePlayDrawing.potentialMoves(false, myGame, new ChessPosition(2, 2));
                         GamePlayDrawing.printBoard(out, false, myBoard, legalMoves);
-                        postLoginUI(out, authToken);
+                        //postLoginUI(out, authToken);
+
+                        gamePlay.gamePlayUI(authToken);
                     } catch (Exception exception) {
                         out.print(exception.getMessage());
                         out.println();

@@ -17,12 +17,18 @@ import static ui.EscapeSequences.SET_TEXT_COLOR_WHITE;
 public class GameUI implements Observer {
 
     WebSocketClient client;
+    PrintStream out;
+    String color;
 
     GameUI() throws Exception {
         client = new WebSocketClient(this);
     }
 
-    public void gamePlayUI(PrintStream out, String authToken) {
+    public void setColor(String greyArea) {
+        color = greyArea;
+    }
+
+    public void gamePlayUI(/**PrintStream out, */String authToken) {
         Scanner scanner = new Scanner(System.in);
         out.print(SET_TEXT_COLOR_RED);
         out.print("[LOGGED OUT] >>> ");
@@ -35,7 +41,7 @@ public class GameUI implements Observer {
                 PregameUI.tableWriter(out, "resign", "from game");
                 PregameUI.tableWriter(out, "highlight", "legal moves");
                 PregameUI.tableWriter(out, "help", "with possible commands");
-                gamePlayUI(out, authToken);
+                gamePlayUI(authToken);
             }
             else if (input.equals("redraw")) {
                 try {
@@ -44,7 +50,7 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    gamePlayUI(out, authToken);
+                    gamePlayUI(authToken);
                 }
             }
             else if (input.startsWith("leave")) {
@@ -118,12 +124,14 @@ public class GameUI implements Observer {
                     col = 0;
                 }
                 try {
-
+                    /**
+                     * makeMove via WebSocketHandler
+                     */
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI(out);
+                    gamePlayUI(authToken);
                 }
             }
             else {
@@ -165,16 +173,23 @@ public class GameUI implements Observer {
 
     @Override
     public void loadGame(LoadGame loadGame) {
-
+        if (Objects.equals(color, "BLACK")) {
+            GamePlayDrawing.printBoard(out, false, loadGame.getGame(), GamePlayDrawing.cleanLook());
+        }
+        else {
+            GamePlayDrawing.printBoard(out, true, loadGame.getGame(), GamePlayDrawing.cleanLook());
+        }
     }
 
     @Override
     public void errorMessage(ErrorMessage errorMessage) {
-
+        out.print(errorMessage.getErrorMessage());
+        out.println();
     }
 
     @Override
     public void notification(Notification notification) {
-
+        out.print(notification.getMessage());
+        out.println();
     }
 }
