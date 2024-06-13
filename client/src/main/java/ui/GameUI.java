@@ -58,8 +58,7 @@ public class GameUI implements Observer {
                 PregameUI.tableWriter(out, "highlight", "legal moves");
                 PregameUI.tableWriter(out, "help", "with possible commands");
                 gamePlayUI();
-            }
-            else if (input.equals("redraw")) {
+            } else if (input.equals("redraw")) {
                 try {
                     if (Objects.equals(color, "BLACK")) {
                         GamePlayDrawing.printBoard(out, false, board, GamePlayDrawing.cleanLook());
@@ -67,8 +66,7 @@ public class GameUI implements Observer {
                     else {
                         GamePlayDrawing.printBoard(out, true, board, GamePlayDrawing.cleanLook());
                     }
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
@@ -76,16 +74,13 @@ public class GameUI implements Observer {
             }
             else if (input.startsWith("leave")) {
                 try {
-
-                }
-                catch (Exception exception) {
+                    client.send(new Gson().toJson(new Leave(authToken, gameID)));
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
                 }
-            }
-            else if (input.startsWith("move")) {
-
+            } else if (input.startsWith("move")) {
                 String one = scanner.next();
                 String two = scanner.next();
                 String three = "";
@@ -97,20 +92,16 @@ public class GameUI implements Observer {
                 }
                 if (Objects.equals(three, "queen")) {
                     promotion = ChessPiece.PieceType.QUEEN;
-                }
-                else if (Objects.equals(three, "knight")) {
+                } else if (Objects.equals(three, "knight")) {
                     promotion = ChessPiece.PieceType.KNIGHT;
-                }
-                else if (Objects.equals(three, "bishop")) {
+                } else if (Objects.equals(three, "bishop")) {
                     promotion = ChessPiece.PieceType.BISHOP;
-                }
-                else if (Objects.equals(three, "rook")) {
+                } else if (Objects.equals(three, "rook")) {
                     promotion = ChessPiece.PieceType.ROOK;
                 }
                 try {
                     client.send(new Gson().toJson(new MakeMove(authToken, gameID, new ChessMove(start, end, promotion))));
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
@@ -118,35 +109,29 @@ public class GameUI implements Observer {
             }
             else if (input.startsWith("resign")) {
                 try {
-
-                }
-                catch (Exception exception) {
+                    client.send(new Gson().toJson(new Resign(authToken, gameID)));
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
                 }
-            }
-            else if (input.startsWith("highlight")) {
+            } else if (input.startsWith("highlight")) {
                 String pos = scanner.next();
                 ChessPosition position = myPlace(pos);
-
                 try {
                     if (Objects.equals(color, "BLACK")) {
                         TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(false, chessGame, position);
                         GamePlayDrawing.printBoard(out, false, board, legalMoves);
-                    }
-                    else {
+                    } else {
                         TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, chessGame, position);
                         GamePlayDrawing.printBoard(out, true, board, legalMoves);
                     }
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     gamePlayUI();
                 }
-            }
-            else {
+            } else {
                 PregameUI.pleaseTryAgain(out);
                 gamePlayUI();
             }
