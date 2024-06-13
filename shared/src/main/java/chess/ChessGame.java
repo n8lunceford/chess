@@ -1,8 +1,6 @@
 package chess;
-
 import java.util.ArrayList;
 import java.util.Collection;
-
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -25,6 +23,9 @@ public class ChessGame {
     private boolean hasResigned = false;
     public ChessGame() {
         board = new ChessBoard();
+        board.resetBoard();
+    }
+    public void startUp() {
         board.resetBoard();
     }
     public boolean resigned() {
@@ -73,7 +74,6 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ArrayList<ChessMove> theMoves = new ArrayList<>();
-
         if (isInStalemate(board.getPiece(startPosition).getTeamColor()) || isInCheckmate(board.getPiece(startPosition).getTeamColor())) {
             return theMoves;
         }
@@ -388,7 +388,6 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             isDead = true;
             ArrayList<ChessMove> friendMoves = friendHitList(teamColor);
-
             for (ChessMove moveIterator : friendMoves) {
                 ChessBoard cloneBoard = cloneKnockoff();
                 cloneBoard.addPiece(moveIterator.getEndPosition(), cloneBoard.getPiece(moveIterator.getStartPosition()));

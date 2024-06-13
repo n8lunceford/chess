@@ -82,7 +82,7 @@ public class GameUI implements Observer {
                     Leave leave = new Leave(authToken, gameID);
                     leave.setCommandType(UserGameCommand.CommandType.LEAVE);
                     client.send(new Gson().toJson(leave));
-                    gamePlayUI();
+                    //gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -194,7 +194,7 @@ public class GameUI implements Observer {
             col = 0;
             row = 0;
         }
-        return new ChessPosition(row, col);
+        return new ChessPosition(col, row);
     }
 
 

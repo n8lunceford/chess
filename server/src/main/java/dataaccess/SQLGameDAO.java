@@ -37,7 +37,9 @@ public class SQLGameDAO implements GameDAO {
             preparedStatement.setString(2, null);
             preparedStatement.setString(3, null);
             preparedStatement.setString(4, gameName);
-            preparedStatement.setString(5, jason.toJson(new ChessGame()));
+            ChessGame chessGame = new ChessGame();
+            chessGame.startUp();
+            preparedStatement.setString(5, jason.toJson(chessGame));
             preparedStatement.executeUpdate();
             return gameID;
         }
