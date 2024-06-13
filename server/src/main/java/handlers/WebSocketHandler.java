@@ -161,7 +161,7 @@ public class WebSocketHandler {
         }
 
         for (Session mySession : myMap.get(command.getGameID())) {
-            if (session.isOpen()) {
+            if (mySession.isOpen()) {
                 mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " is taking a break.")));
             }
         }
