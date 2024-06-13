@@ -65,8 +65,6 @@ public class WebSocketHandler {
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            //sendMessage(session.getRemote(), new ErrorMessage("Error: " + ex.getMessage()));
-            //session.getRemote().sendString("Error: " + ex.getMessage());
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage())));
         }
 
@@ -79,25 +77,32 @@ public class WebSocketHandler {
         saveSession(command.getGameID(), session);
 
         if (gameDAO.getGame(command.getGameID()) != null && myMap.get(command.getGameID()) != null) {
-
+            GameData gameData = gameDAO.getGame(command.getGameID());
             for (Session mySession : myMap.get(command.getGameID())) {
                 if (mySession.isOpen()) {
                     if (session != mySession) {
-                        mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has connected.")));
-                    } else {
+                        if (Objects.equals(username, gameData.whiteUsername())) {
+                            mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has connected as the WHITE player.")));
+                        }
+                        else if (Objects.equals(username, gameData.blackUsername())) {
+                            mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has connected as the BLACK player.")));
+                        }
+                        else {
+                            mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has connected as an OBSERVER.")));
+                        }
+                    }
+                    else {
                         mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, gameDAO.getGame(command.getGameID()).game().getBoard())));
                     }
                 }
             }
-
         }
         else {
             throw new Exception();
         }
-        //session.getRemote().sendString("WebSocket response: " + new Gson().toJson(command));
     }
 
-    private void makeMove(Session session, String username, MakeMove command) throws DataAccessException, InvalidMoveException, Exception {
+    private void makeMove(Session session, String username, MakeMove command) throws Exception {
 
         if (gameDAO.getGame(command.getGameID()) != null && myMap.get(command.getGameID()) != null) {
             GameData myGameData = gameDAO.getGame(command.getGameID());
@@ -112,19 +117,31 @@ public class WebSocketHandler {
                     try {
                         myGame.makeMove(command.getMove());
                         gameDAO.renewGame(myGame, myGameData);
+                        String start = coordinate(command.getMove().getStartPosition().getRow(), command.getMove().getStartPosition().getColumn());
+                        String end = coordinate(command.getMove().getEndPosition().getRow(), command.getMove().getEndPosition().getColumn());
                         for (Session mySession : myMap.get(command.getGameID())) {
                             if (mySession.isOpen()) {
                                 mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame.getBoard())));
                                 if (session != mySession) {
-                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved.")));
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved from " + start + " to " + end + ".")));
+                                }
+                                if (myGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has put " + myGameData.blackUsername() + " in checkmate!")));
+                                }
+                                else if (myGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has put " + myGameData.blackUsername() + " in check!")));
+                                }
+                                if (myGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has put " + myGameData.whiteUsername() + " in checkmate!")));
+                                }
+                                else if (myGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                                    mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has put " + myGameData.whiteUsername() + " in check!")));
                                 }
                             }
                         }
 
                     }
                     catch (InvalidMoveException ex) {
-                        //ex.printStackTrace();
-                        //throw ex;
                         if (session.isOpen()) {
                             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage())));
                         }
@@ -165,7 +182,6 @@ public class WebSocketHandler {
                 mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " is taking a break.")));
             }
         }
-        //session.getRemote().sendString("WebSocket response: " + new Gson().toJson(command));
     }
 
     private void resign(Session session, String username, Resign command) throws DataAccessException, IOException {
@@ -212,6 +228,82 @@ public class WebSocketHandler {
 
     private String getUsername(String authString) throws DataAccessException {
         return authDAO.getAuth(authString).username();
+    }
+
+    private String coordinate(int row, int col) {
+        String coord = "";
+        coord = halfCoordinate(coord, col, true);
+        coord = halfCoordinate(coord, row, false);
+        return coord;
+    }
+
+    private String halfCoordinate(String coord, int myNum, boolean isCol) {
+        String more = coord;
+        if (myNum == 1) {
+            if (isCol) {
+                more = "a";
+            }
+            else {
+                more = more + "1";
+            }
+        }
+        if (myNum == 2) {
+            if (isCol) {
+                more = "b";
+            }
+            else {
+                more = more + "2";
+            }
+        }
+        if (myNum == 3) {
+            if (isCol) {
+                more = "c";
+            }
+            else {
+                more = more + "3";
+            }
+        }
+        if (myNum == 4) {
+            if (isCol) {
+                more = "d";
+            }
+            else {
+                more = more + "4";
+            }
+        }
+        if (myNum == 5) {
+            if (isCol) {
+                more = "e";
+            }
+            else {
+                more = more + "5";
+            }
+        }
+        if (myNum == 6) {
+            if (isCol) {
+                more = "f";
+            }
+            else {
+                more = more + "6";
+            }
+        }
+        if (myNum == 7) {
+            if (isCol) {
+                more = "g";
+            }
+            else {
+                more = more + "7";
+            }
+        }
+        if (myNum == 8) {
+            if (isCol) {
+                more = "h";
+            }
+            else {
+                more = more + "8";
+            }
+        }
+        return more;
     }
 
 

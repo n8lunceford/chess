@@ -85,43 +85,43 @@ public class GameUI implements Observer {
             }
             else if (input.startsWith("highlight")) {
                 String pos = scanner.next();
-                int row;
                 int col;
+                int row;
                 if (pos.startsWith("a")) {
-                    row = converter(pos, "a");
-                    col = 1;
+                    col = converter(pos, "a");
+                    row = 1;
                 }
                 else if (pos.startsWith("b")) {
-                    row = converter(pos, "b");
-                    col = 2;
+                    col = converter(pos, "b");
+                    row = 2;
                 }
                 else if (pos.startsWith("c")) {
-                    row = converter(pos, "c");
-                    col = 3;
+                    col = converter(pos, "c");
+                    row = 3;
                 }
                 else if (pos.startsWith("d")) {
-                    row = converter(pos, "d");
-                    col = 4;
+                    col = converter(pos, "d");
+                    row = 4;
                 }
                 else if (pos.startsWith("e")) {
-                    row = converter(pos, "e");
-                    col = 5;
+                    col = converter(pos, "e");
+                    row = 5;
                 }
                 else if (pos.startsWith("f")) {
-                    row = converter(pos, "f");
-                    col = 6;
+                    col = converter(pos, "f");
+                    row = 6;
                 }
                 else if (pos.startsWith("g")) {
-                    row = converter(pos, "g");
-                    col = 7;
+                    col = converter(pos, "g");
+                    row = 7;
                 }
                 else if (pos.startsWith("h")) {
-                    row = converter(pos, "h");
-                    col = 8;
+                    col = converter(pos, "h");
+                    row = 8;
                 }
                 else {
-                    row = 0;
                     col = 0;
+                    row = 0;
                 }
                 try {
                     /**
