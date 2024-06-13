@@ -92,7 +92,7 @@ public class WebSocketHandler {
                         }
                     }
                     else {
-                        mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, gameDAO.getGame(command.getGameID()).game().getBoard())));
+                        mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, gameDAO.getGame(command.getGameID()).game())));
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class WebSocketHandler {
                         String end = coordinate(command.getMove().getEndPosition().getRow(), command.getMove().getEndPosition().getColumn());
                         for (Session mySession : myMap.get(command.getGameID())) {
                             if (mySession.isOpen()) {
-                                mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame.getBoard())));
+                                mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame)));
                                 if (session != mySession) {
                                     mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved from " + start + " to " + end + ".")));
                                 }

@@ -148,6 +148,13 @@ public class PregameUI {
                 }
                 postLoginUI(out, authToken);
             }
+
+
+
+
+
+
+
             else if (Objects.equals(input, "join")) {
                 int gameID = scanner.nextInt();
                 String teamColor = scanner.next();
@@ -159,11 +166,11 @@ public class PregameUI {
 
                         if (teamColor.equals("WHITE")) {
                             playerColor = ChessGame.TeamColor.WHITE;
-                            gamePlay.setColor("WHITE");
+                            gamePlay.setValues("WHITE");
                         }
                         else {
                             playerColor = ChessGame.TeamColor.BLACK;
-                            gamePlay.setColor("BLACK");
+                            gamePlay.setValues("BLACK");
                         }
                         fake.joinGame(authToken, playerColor, gameID);
 
@@ -175,16 +182,16 @@ public class PregameUI {
                             }
                         }
 
-                        ChessBoard myBoard = myGame.getBoard();
-                        out.println();
-                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, myGame, new ChessPosition(2, 2));
-                        GamePlayDrawing.printBoard(out, true, myBoard, legalMoves);
-                        out.println();
-                        legalMoves = GamePlayDrawing.potentialMoves(false, myGame, new ChessPosition(2, 2));
-                        GamePlayDrawing.printBoard(out, false, myBoard, legalMoves);
-                        //postLoginUI(out, authToken);
+//                        ChessBoard myBoard = myGame.getBoard();
+//                        out.println();
+//                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, myGame, new ChessPosition(2, 2));
+//                        GamePlayDrawing.printBoard(out, true, myBoard, legalMoves);
+//                        out.println();
+//                        legalMoves = GamePlayDrawing.potentialMoves(false, myGame, new ChessPosition(2, 2));
+//                        GamePlayDrawing.printBoard(out, false, myBoard, legalMoves);
 
-                        gamePlay.gamePlayUI(authToken);
+                        gamePlay.startGame(authToken, gameID);
+
                     } catch (Exception exception) {
                         out.print(exception.getMessage());
                         out.println();
@@ -196,6 +203,13 @@ public class PregameUI {
                     postLoginUI(out, authToken);
                 }
             }
+
+
+
+
+
+
+
             else if (Objects.equals(input, "observe")) {
                 int gameID = scanner.nextInt();
                 postLoginUI(out, authToken);

@@ -1,23 +1,20 @@
 package websocket.messages;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 
 public class LoadGame extends ServerMessage {
 
-    private ChessBoard game;
+    private ChessGame game;
     //private boolean isBlack;
 
-    public LoadGame(ServerMessageType type, ChessBoard game/**, boolean isBlack*/) {
+    public LoadGame(ServerMessageType type, ChessGame game) {
         super(type);
         this.game = game;
         //this.isBlack = isBlack;
     }
 
-    public ChessBoard getGame() {
+    public ChessGame getGame() {
         return game;
     }
-
-//    public boolean getIsBlack() {
-//        return isBlack;
-//    }
 }

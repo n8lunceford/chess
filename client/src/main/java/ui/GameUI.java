@@ -1,37 +1,55 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+import com.google.gson.Gson;
 import facade.Observer;
 import facade.WebSocketClient;
 import model.GameData;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGame;
-import websocket.messages.Notification;
+import websocket.commands.*;
+import websocket.messages.*;
 
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Scanner;
 
-import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
-import static ui.EscapeSequences.SET_TEXT_COLOR_WHITE;
+import static ui.EscapeSequences.*;
 
 public class GameUI implements Observer {
 
-    WebSocketClient client;
-    PrintStream out;
-    String color;
+    private WebSocketClient client;
+    private PrintStream out;
+    private String color;
+    private int gameID;
+    private ChessBoard board;
+    private ChessGame chessGame;
+    String authToken;
 
     GameUI() throws Exception {
         client = new WebSocketClient(this);
     }
 
-    public void setColor(String greyArea) {
+    public void setValues(String greyArea) {
         color = greyArea;
     }
 
-    public void gamePlayUI(/**PrintStream out, */String authToken) {
+    public void startGame(String authToken, int myGameID) throws Exception {
+        client.send(new Gson().toJson(new Connect(authToken, myGameID)));
+        gameID = myGameID;
+        this.authToken = authToken;
+        gamePlayUI();
+    }
+
+    public void gamePlayUI() {
         Scanner scanner = new Scanner(System.in);
-        out.print(SET_TEXT_COLOR_RED);
-        out.print("[LOGGED OUT] >>> ");
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_TEXT_BOLD);
+        out.print(SET_TEXT_BLINKING);
+        out.print("[IN GAME] >>> ");
+        out.print(RESET_TEXT_BOLD_FAINT);
+        out.print(RESET_TEXT_BLINKING);
+        out.print(SET_TEXT_COLOR_WHITE);
         String input = scanner.next();
         if (!Objects.equals(input, "quit")) {
             if (Objects.equals(input, "help")) {
@@ -41,16 +59,21 @@ public class GameUI implements Observer {
                 PregameUI.tableWriter(out, "resign", "from game");
                 PregameUI.tableWriter(out, "highlight", "legal moves");
                 PregameUI.tableWriter(out, "help", "with possible commands");
-                gamePlayUI(authToken);
+                gamePlayUI();
             }
             else if (input.equals("redraw")) {
                 try {
-
+                    if (Objects.equals(color, "BLACK")) {
+                        GamePlayDrawing.printBoard(out, false, board, GamePlayDrawing.cleanLook());
+                    }
+                    else {
+                        GamePlayDrawing.printBoard(out, true, board, GamePlayDrawing.cleanLook());
+                    }
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    gamePlayUI(authToken);
+                    gamePlayUI();
                 }
             }
             else if (input.startsWith("leave")) {
@@ -60,7 +83,7 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI(out);
+                    //gamePlayUI();
                 }
             }
             else if (input.startsWith("move")) {
@@ -70,7 +93,7 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI(out);
+                    //gamePlayUI();
                 }
             }
             else if (input.startsWith("resign")) {
@@ -80,66 +103,81 @@ public class GameUI implements Observer {
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    //gamePlayUI(out);
+                    //gamePlayUI();
                 }
             }
             else if (input.startsWith("highlight")) {
                 String pos = scanner.next();
-                int col;
-                int row;
-                if (pos.startsWith("a")) {
-                    col = converter(pos, "a");
-                    row = 1;
-                }
-                else if (pos.startsWith("b")) {
-                    col = converter(pos, "b");
-                    row = 2;
-                }
-                else if (pos.startsWith("c")) {
-                    col = converter(pos, "c");
-                    row = 3;
-                }
-                else if (pos.startsWith("d")) {
-                    col = converter(pos, "d");
-                    row = 4;
-                }
-                else if (pos.startsWith("e")) {
-                    col = converter(pos, "e");
-                    row = 5;
-                }
-                else if (pos.startsWith("f")) {
-                    col = converter(pos, "f");
-                    row = 6;
-                }
-                else if (pos.startsWith("g")) {
-                    col = converter(pos, "g");
-                    row = 7;
-                }
-                else if (pos.startsWith("h")) {
-                    col = converter(pos, "h");
-                    row = 8;
-                }
-                else {
-                    col = 0;
-                    row = 0;
-                }
+                ChessPosition position = myPlace(pos);
+
                 try {
-                    /**
-                     * makeMove via WebSocketHandler
-                     */
+                    if (Objects.equals(color, "BLACK")) {
+                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(false, chessGame, position);
+                        GamePlayDrawing.printBoard(out, false, board, legalMoves);
+                    }
+                    else {
+                        TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, chessGame, position);
+                        GamePlayDrawing.printBoard(out, true, board, legalMoves);
+                    }
                 }
                 catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
-                    gamePlayUI(authToken);
+                    gamePlayUI();
                 }
             }
             else {
                 PregameUI.pleaseTryAgain(out);
-                //gamePlayUI(out);
+                gamePlayUI();
             }
         }
     }
+
+
+
+    private ChessPosition myPlace(String position) {
+        int col;
+        int row;
+        if (position.startsWith("a")) {
+            col = converter(position, "a");
+            row = 1;
+        }
+        else if (position.startsWith("b")) {
+            col = converter(position, "b");
+            row = 2;
+        }
+        else if (position.startsWith("c")) {
+            col = converter(position, "c");
+            row = 3;
+        }
+        else if (position.startsWith("d")) {
+            col = converter(position, "d");
+            row = 4;
+        }
+        else if (position.startsWith("e")) {
+            col = converter(position, "e");
+            row = 5;
+        }
+        else if (position.startsWith("f")) {
+            col = converter(position, "f");
+            row = 6;
+        }
+        else if (position.startsWith("g")) {
+            col = converter(position, "g");
+            row = 7;
+        }
+        else if (position.startsWith("h")) {
+            col = converter(position, "h");
+            row = 8;
+        }
+        else {
+            col = 0;
+            row = 0;
+        }
+        return new ChessPosition(row, col);
+    }
+
+
 
     private int converter(String input, String letter) {
         if (Objects.equals(input, letter + "1")) {
@@ -174,11 +212,13 @@ public class GameUI implements Observer {
     @Override
     public void loadGame(LoadGame loadGame) {
         if (Objects.equals(color, "BLACK")) {
-            GamePlayDrawing.printBoard(out, false, loadGame.getGame(), GamePlayDrawing.cleanLook());
+            GamePlayDrawing.printBoard(out, false, loadGame.getGame().getBoard(), GamePlayDrawing.cleanLook());
         }
         else {
-            GamePlayDrawing.printBoard(out, true, loadGame.getGame(), GamePlayDrawing.cleanLook());
+            GamePlayDrawing.printBoard(out, true, loadGame.getGame().getBoard(), GamePlayDrawing.cleanLook());
         }
+        chessGame = loadGame.getGame();
+        board = chessGame.getBoard();
     }
 
     @Override
