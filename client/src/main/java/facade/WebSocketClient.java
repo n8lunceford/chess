@@ -29,7 +29,7 @@ public class WebSocketClient extends Endpoint {
                         case NOTIFICATION -> observer.notification(new Gson().fromJson(message, Notification.class));
                     }
 
-                    System.out.println(message);
+                    //System.out.println(message);
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();

@@ -156,6 +156,7 @@ public class PregameUI {
                         }
                         fake.joinGame(authToken, playerColor, gameID);
                         gamePlay.startGame(authToken, gameID);
+                        postLoginUI(out, authToken);
                     } catch (Exception exception) {
                         out.print(exception.getMessage());
                         out.println();
@@ -171,6 +172,7 @@ public class PregameUI {
                     GameUI gamePlay = new GameUI();
                     gamePlay.setValues("GREY");
                     gamePlay.startGame(authToken, gameID);
+                    postLoginUI(out, authToken);
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();

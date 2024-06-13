@@ -95,7 +95,7 @@ public class GameUI implements Observer {
                 ChessPosition start = myPlace(one);
                 ChessPosition end = myPlace(two);
                 ChessPiece.PieceType promotion = null;
-                if (board.getPiece(end).getPieceType() == ChessPiece.PieceType.PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
+                if (board.getPiece(start).getPieceType() == ChessPiece.PieceType.PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
                     three = scanner.next();
                 }
                 if (Objects.equals(three, "queen")) {

@@ -47,6 +47,11 @@ public class ChessBoard {
      */
     public void resetBoard() {
         squares = new ChessPiece[8][8];
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                addPiece(new ChessPosition(i, j), null);
+            }
+        }
         for (int c = 0; c < 8; c++) {
             squares[1][c] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             squares[6][c] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
