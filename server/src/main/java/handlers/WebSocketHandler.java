@@ -7,6 +7,7 @@ import dataaccess.DataAccessException;
 import dataaccess.SQLAuthDAO;
 import dataaccess.SQLGameDAO;
 import dataaccess.SQLUserDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
 
@@ -102,43 +103,45 @@ public class WebSocketHandler {
 
         //try {
         if (gameDAO.getGame(command.getGameID()) != null && myMap.get(command.getGameID()) != null) {
-            if (((gameDAO.getGame(command.getGameID()).whiteUsername() != null
-                && Objects.equals(gameDAO.getGame(command.getGameID()).whiteUsername(), username)
-                && gameDAO.getGame(command.getGameID()).game().getTeamTurn() == ChessGame.TeamColor.WHITE)
-                || (gameDAO.getGame(command.getGameID()).blackUsername() != null
-                && Objects.equals(gameDAO.getGame(command.getGameID()).blackUsername(), username)
-                && gameDAO.getGame(command.getGameID()).game().getTeamTurn() == ChessGame.TeamColor.BLACK))) {
+
+            GameData myGameData = gameDAO.getGame(command.getGameID());
+            ChessGame myGame = myGameData.game();
+
+            if (((myGameData.whiteUsername() != null
+                && Objects.equals(myGameData.whiteUsername(), username)
+                && myGame.getTeamTurn() == ChessGame.TeamColor.WHITE)
+                || (myGameData.blackUsername() != null
+                && Objects.equals(myGameData.blackUsername(), username)
+                && myGame.getTeamTurn() == ChessGame.TeamColor.BLACK))) {
 
                 try {
-                    gameDAO.getGame(command.getGameID()).game().makeMove(command.getMove());
+                    myGame.makeMove(command.getMove());
+                    gameDAO.renewGame(myGame, myGameData);
+
+                    for (Session mySession : myMap.get(command.getGameID())) {
+                        if (mySession.isOpen()) {
+                            mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, myGame.getBoard())));
+                            if (session != mySession) {
+                                mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved.")));
+                            }
+                        }
+                    }
+
                 }
                 catch (InvalidMoveException ex) {
                     //ex.printStackTrace();
-                    throw ex;
+                    //throw ex;
+                    session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage())));
                 }
             }
+            else {
+                session.getRemote().sendString(new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: " + "it wasn\'t " + username + "\'s turn.")));
+            }
+
+
         }
         else {
-            if (gameDAO.getGame(command.getGameID()) != null) {
-                throw new DataAccessException("The game does not exist.");
-            }
-//            else {
-//                throw new InvalidMoveException("This move is invalid.");
-//            }
-        }
-
-        try {
-            for (Session mySession : myMap.get(command.getGameID())) {
-                if (mySession.isOpen()) {
-                    mySession.getRemote().sendString(new Gson().toJson(new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, gameDAO.getGame(command.getGameID()).game().getBoard())));
-                    if (session != mySession) {
-                        mySession.getRemote().sendString(new Gson().toJson(new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has moved.")));
-                    }
-                }
-            }
-        }
-        catch (IOException ex) {
-            throw new Exception("Problems with the sessions.");
+            throw new DataAccessException("The game does not exist.");
         }
 
     }
