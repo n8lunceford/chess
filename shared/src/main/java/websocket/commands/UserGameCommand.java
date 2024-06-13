@@ -36,6 +36,10 @@ public class UserGameCommand {
         return this.commandType;
     }
 
+    public void setCommandType(CommandType type) {
+        this.commandType = type;
+    }
+
     public int getGameID() {
         return this.gameID;
     }

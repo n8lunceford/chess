@@ -9,6 +9,7 @@ import websocket.commands.*;
 import websocket.messages.*;
 
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -17,7 +18,7 @@ import static ui.EscapeSequences.*;
 public class GameUI implements Observer {
 
     private WebSocketClient client;
-    private PrintStream out;
+    private PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     private String color;
     private int gameID;
     private ChessBoard board;
@@ -33,7 +34,10 @@ public class GameUI implements Observer {
     }
 
     public void startGame(String authToken, int myGameID) throws Exception {
-        client.send(new Gson().toJson(new Connect(authToken, myGameID)));
+        Connect connect = new Connect(authToken, myGameID);
+        out.println();
+        connect.setCommandType(UserGameCommand.CommandType.CONNECT);
+        client.send(new Gson().toJson(connect));
         gameID = myGameID;
         this.authToken = authToken;
         gamePlayUI();
@@ -66,6 +70,7 @@ public class GameUI implements Observer {
                     else {
                         GamePlayDrawing.printBoard(out, true, board, GamePlayDrawing.cleanLook());
                     }
+                    gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -74,7 +79,10 @@ public class GameUI implements Observer {
             }
             else if (input.startsWith("leave")) {
                 try {
-                    client.send(new Gson().toJson(new Leave(authToken, gameID)));
+                    Leave leave = new Leave(authToken, gameID);
+                    leave.setCommandType(UserGameCommand.CommandType.LEAVE);
+                    client.send(new Gson().toJson(leave));
+                    gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -100,7 +108,10 @@ public class GameUI implements Observer {
                     promotion = ChessPiece.PieceType.ROOK;
                 }
                 try {
-                    client.send(new Gson().toJson(new MakeMove(authToken, gameID, new ChessMove(start, end, promotion))));
+                    MakeMove makeMove = new MakeMove(authToken, gameID, new ChessMove(start, end, promotion));
+                    makeMove.setCommandType(UserGameCommand.CommandType.MAKE_MOVE);
+                    client.send(new Gson().toJson(makeMove));
+                    gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -109,7 +120,10 @@ public class GameUI implements Observer {
             }
             else if (input.startsWith("resign")) {
                 try {
-                    client.send(new Gson().toJson(new Resign(authToken, gameID)));
+                    Resign resign = new Resign(authToken, gameID);
+                    resign.setCommandType(UserGameCommand.CommandType.RESIGN);
+                    client.send(new Gson().toJson(resign));
+                    gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -126,6 +140,7 @@ public class GameUI implements Observer {
                         TwoBools[][] legalMoves = GamePlayDrawing.potentialMoves(true, chessGame, position);
                         GamePlayDrawing.printBoard(out, true, board, legalMoves);
                     }
+                    gamePlayUI();
                 } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
@@ -216,6 +231,7 @@ public class GameUI implements Observer {
 
     @Override
     public void loadGame(LoadGame loadGame) {
+        out.println();
         if (Objects.equals(color, "BLACK")) {
             GamePlayDrawing.printBoard(out, false, loadGame.getGame().getBoard(), GamePlayDrawing.cleanLook());
         }
@@ -228,12 +244,14 @@ public class GameUI implements Observer {
 
     @Override
     public void errorMessage(ErrorMessage errorMessage) {
+        out.println();
         out.print(errorMessage.getErrorMessage());
         out.println();
     }
 
     @Override
     public void notification(Notification notification) {
+        out.println();
         out.print(notification.getMessage());
         out.println();
     }
