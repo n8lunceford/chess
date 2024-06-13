@@ -107,30 +107,25 @@ public class PregameUI {
                 tableWriter(out, "quit", "playing chess");
                 tableWriter(out, "help", "with possible commands");
                 postLoginUI(out, authToken);
-            }
-            else if (Objects.equals(input, "logout")) {
+            } else if (Objects.equals(input, "logout")) {
                 try {
                     fake.logout(authToken);
                     preLoginUI(out);
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     postLoginUI(out, authToken);
                 }
-            }
-            else if (Objects.equals(input, "create")) {
+            } else if (Objects.equals(input, "create")) {
                 String gameName = scanner.next();
                 try {
                     fake.createGame(authToken, gameName);
                     out.println();
                     postLoginUI(out, authToken);
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     postLoginUI(out, authToken);
                 }
-            }
-            else if (Objects.equals(input, "list")) {
+            } else if (Objects.equals(input, "list")) {
                 out.print(SET_TEXT_COLOR_WHITE);
                 try {
                     ArrayList<GameData> games = fake.listGames(authToken);
@@ -139,62 +134,49 @@ public class PregameUI {
                         out.println();
                     }
                     postLoginUI(out, authToken);
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     postLoginUI(out, authToken);
                 }
                 postLoginUI(out, authToken);
-            }
-
-            else if (Objects.equals(input, "join")) {
+            } else if (Objects.equals(input, "join")) {
                 int gameID = scanner.nextInt();
                 String teamColor = scanner.next();
                 if (Objects.equals(teamColor, "WHITE") || Objects.equals(teamColor, "BLACK")) {
                     try {
                         ChessGame.TeamColor playerColor;
-
                         GameUI gamePlay = new GameUI();
-
                         if (teamColor.equals("WHITE")) {
                             playerColor = ChessGame.TeamColor.WHITE;
                             gamePlay.setValues("WHITE");
-                        }
-                        else {
+                        } else {
                             playerColor = ChessGame.TeamColor.BLACK;
                             gamePlay.setValues("BLACK");
                         }
                         fake.joinGame(authToken, playerColor, gameID);
-
                         gamePlay.startGame(authToken, gameID);
-                    }
-                    catch (Exception exception) {
+                    } catch (Exception exception) {
                         out.print(exception.getMessage());
                         out.println();
                         postLoginUI(out, authToken);
                     }
-                }
-                else {
+                } else {
                     pleaseTryAgain(out);
                     postLoginUI(out, authToken);
                 }
-            }
-
-            else if (Objects.equals(input, "observe")) {
+            } else if (Objects.equals(input, "observe")) {
                 int gameID = scanner.nextInt();
                 try {
                     GameUI gamePlay = new GameUI();
                     gamePlay.setValues("GREY");
                     gamePlay.startGame(authToken, gameID);
-                }
-                catch (Exception exception) {
+                } catch (Exception exception) {
                     out.print(exception.getMessage());
                     out.println();
                     postLoginUI(out, authToken);
                 }
-            }
-            else {
+            } else {
                 pleaseTryAgain(out);
                 postLoginUI(out, authToken);
             }
